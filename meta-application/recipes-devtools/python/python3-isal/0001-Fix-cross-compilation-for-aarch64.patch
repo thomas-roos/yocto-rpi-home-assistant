@@ -1,9 +1,9 @@
-From 03e89a14ab6dcfa5448c96db64b397894d33c969 Mon Sep 17 00:00:00 2001
+From ba5abbdba072f8e0267f9fdba2a78e90ce0a9a70 Mon Sep 17 00:00:00 2001
 From: Thomas Roos <throos@amazon.de>
 Date: Wed, 21 Jan 2026 15:31:55 +0000
 Subject: [PATCH] Fix cross-compilation for aarch64
 
-Use OECORE_TARGET_ARCH environment variable to detect target architecture
+Use ISAL_TARGET_ARCH environment variable to detect target architecture
 instead of platform.machine() which returns the build host architecture.
 
 Upstream-Status: Inappropriate [embedded specific]
@@ -12,7 +12,7 @@ Upstream-Status: Inappropriate [embedded specific]
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/setup.py b/setup.py
-index c5691f9..8f2bed7 100644
+index c5691f9..ae18ed0 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -115,7 +115,11 @@ def build_isa_l():
@@ -20,10 +20,10 @@ index c5691f9..8f2bed7 100644
      run_args = dict(cwd=build_dir, env=build_env)
      if SYSTEM_IS_UNIX:
 -        if platform.machine() == "aarch64":
-+        target_arch = os.environ.get("OECORE_TARGET_ARCH", platform.machine())
++        target_arch = os.environ.get("ISAL_TARGET_ARCH", platform.machine())
 +        if target_arch == "aarch64":
 +            cflags_param = "CFLAGS_aarch64"
-+        elif os.environ.get("OECORE_TARGET_ARCH") == "aarch64":
++        elif os.environ.get("ISAL_TARGET_ARCH") == "aarch64":
 +            # Cross-compilation for aarch64
              cflags_param = "CFLAGS_aarch64"
          else:
