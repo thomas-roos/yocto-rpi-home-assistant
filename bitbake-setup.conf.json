@@ -10,7 +10,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "5127faf986d8543bb88e73cf3dccb407d80c9a25"
             },
             "path": "bitbake"
         },
@@ -22,7 +22,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "c6e2bfc538258086053a569c2143ad8bc9a840bd"
             },
             "path": "openembedded-core"
         },
@@ -34,7 +34,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "c23c19e0b300812bad314f1d0a901965315271ae"
             },
             "path": "meta-yocto"
         },
@@ -46,7 +46,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "3e3f0eac0f599e92442d8c6c0000eb961d8c4170"
             },
             "path": "meta-openembedded"
         },
@@ -58,7 +58,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "96d6e240c3b92bd32baa00eb438b5948d8085e2f"
             },
             "path": "meta-rauc"
         },
@@ -70,7 +70,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "fc5ff414b9b505b2693e9f154c8a4dff3e018a8f"
             },
             "path": "meta-rauc-community"
         },
@@ -82,7 +82,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "b9d649e1d4ace6b4d6e7cc5516e68e1397605ecf"
             },
             "path": "meta-raspberrypi"
         },
@@ -94,7 +94,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "09370806a33b7cd83837059430eb9cc2fddd8ac5"
             },
              "path": "meta-python-ai"
         },
@@ -106,7 +106,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "28d26fd95397bf575e65fcca0cbb302b1e9bc7ff"
             },
              "path": "meta-virtualization"
         },
@@ -118,7 +118,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "master"
+                "rev": "3172c676a795815099be2f0b3fbf7dd229ad6bb8"
             },
              "path": "meta-sca"
         },
@@ -130,7 +130,7 @@
                     }
                 },
                 "branch": "main",
-                "rev": "main"
+                "rev": "74db67d56386d3706cb1e448edaaf7910ac37d75"
             },
              "path": "meta-clang-revival"
         },
@@ -142,7 +142,7 @@
                     }
                 },
                 "branch": "main",
-                "rev": "main"
+                "rev": "3aae74f8a1911a82b600f97807e3cb4754be0d21"
             },
             "path": "meta-homeassistant"
         }

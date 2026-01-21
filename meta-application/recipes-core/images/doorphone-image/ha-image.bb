@@ -105,3 +105,6 @@ EXTRA_IMAGECMD:ext4 = "-i 4096 -b 4096 -E hash_seed=86ca73ff-7379-40bd-a098-fcb0
 
 ### doorphone
 IMAGE_INSTALL:append = " python3-homeassistant"
+
+# Disable file clash checking for Python namespace packages
+OPKG_ARGS:append = " --force-overwrite"
