@@ -1,2 +1,7 @@
 # Python 3.14+ compatibility - isal uses Cython which should be compatible
-# No specific fixes needed, just ensure build environment is correct
+# Fix cross-compilation issue where x86_64 assembly is built for ARM
+do_compile:prepend() {
+    # Force detection of correct architecture
+    export SYSTEM_IS_UNIX=1
+    export SYSTEM_IS_WINDOWS=0
+}
