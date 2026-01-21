@@ -38,10 +38,11 @@ This document describes the fixes applied to build ha-image with Python 3.14+.
 - `recipes-devtools/python/python3-orjson_%.bbappend`
 
 ### 6. python3-isal
-**Issue**: Cython compatibility  
-**Fix**: No specific fix needed, Cython handles Python 3.14  
+**Issue**: Cross-compilation builds x86_64 assembly for ARM target  
+**Fix**: Detect cross-compilation from OECORE_TARGET_ARCH environment variable  
 **Files**:
-- `recipes-devtools/python/python3-isal_%.bbappend` (placeholder)
+- `recipes-devtools/python/python3-isal_%.bbappend`
+- `recipes-devtools/python/python3-isal/0001-Fix-cross-compilation-for-aarch64.patch`
 
 ### 7. python3-pizzapi
 **Issue**: File conflicts with tests directory  
