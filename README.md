@@ -18,7 +18,8 @@ git submodule update --init --recursive
 2. Initialize the build environment:
 ```bash
 cd bitbake/bin/ && \
-./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
+./bitbake-setup --setting default top-dir-prefix $PWD/../../ \
+  init \
   $PWD/../../bitbake-setup.conf.json \
   homeassistant distro/poky-altcfg application/ha core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
@@ -26,29 +27,29 @@ cd bitbake/bin/ && \
 
 3. Source the build environment:
 ```bash
-. ./bitbake-builds/bitbake-setup-doorphone-distro_poky-altcfg/build/init-build-env
+. ./bitbake-builds/setup/build/init-build-env
 ```
 
 4. Build the image:
 ```bash
-bitbake doorphone-image
+bitbake ha-image
 ```
 
 Or rauch bundle:
 
 ```bash
-bitbake doorphone-bundle
+bitbake ha-bundle
 ```
 
 
 5. Resulting image:
 
 ```bash
-./bitbake-builds/bitbake-setup-doorphone-distro_poky-altcfg/build/tmp/deploy/images/raspberrypi-armv8/doorphone-image-raspberrypi-armv8.rootfs.wic.bz2
+./bitbake-builds/setup/build/tmp/deploy/images/raspberrypi-armv8/ha-image-raspberrypi-armv8.rootfs.wic.bz2
 ```
 
 Or rauc bundle:
 
 ```bash
-./bitbake-builds/bitbake-setup-doorphone-distro_poky-altcfg/build/tmp/deploy/images/raspberrypi-armv8/doorphone-bundle-raspberrypi-armv8.raucb
+./bitbake-builds/setup/build/tmp/deploy/images/raspberrypi-armv8/ha-bundle-raspberrypi-armv8.raucb
 ```

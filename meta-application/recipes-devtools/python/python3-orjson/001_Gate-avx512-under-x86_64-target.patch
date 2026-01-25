@@ -1,0 +1,59 @@
+From 3c1faec09d2e8fd680fc1de4f1b7f89f3a885ddd Mon Sep 17 00:00:00 2001
+From: misuzu <bakalolka@gmail.com>
+Date: Sat, 25 Oct 2025 11:53:45 +0300
+Subject: [PATCH] Gate avx512 under x86_64 target
+
+Upstream-Status: Submitted [https://github.com/ijl/orjson/pull/614]
+---
+ src/str/mod.rs   |  2 +-
+ src/str/pystr.rs | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/str/mod.rs b/src/str/mod.rs
+index abe0e9d..f53fc91 100644
+--- a/src/str/mod.rs
++++ b/src/str/mod.rs
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: (Apache-2.0 OR MIT)
+ // Copyright ijl (2024-2025)
+ 
+-#[cfg(feature = "avx512")]
++#[cfg(all(target_arch = "x86_64", feature = "avx512"))]
+ mod avx512;
+ mod pystr;
+ mod pyunicode_new;
+diff --git a/src/str/pystr.rs b/src/str/pystr.rs
+index 8472cf6..c6568f8 100644
+--- a/src/str/pystr.rs
++++ b/src/str/pystr.rs
+@@ -22,15 +22,15 @@ fn to_str_via_ffi(op: *mut PyObject) -> Option<&'static str> {
+     }
+ }
+ 
+-#[cfg(feature = "avx512")]
++#[cfg(all(target_arch = "x86_64", feature = "avx512"))]
+ pub type StrDeserializer = unsafe fn(&str) -> *mut PyObject;
+ 
+-#[cfg(feature = "avx512")]
++#[cfg(all(target_arch = "x86_64", feature = "avx512"))]
+ static mut STR_CREATE_FN: StrDeserializer = super::scalar::str_impl_kind_scalar;
+ 
+ pub fn set_str_create_fn() {
+     unsafe {
+-        #[cfg(feature = "avx512")]
++        #[cfg(all(target_arch = "x86_64", feature = "avx512"))]
+         if std::is_x86_feature_detected!("avx512vl") {
+             STR_CREATE_FN = crate::str::avx512::create_str_impl_avx512vl;
+         }
+@@ -83,9 +83,9 @@ impl PyStr {
+                 ptr: nonnull!(use_immortal!(EMPTY_UNICODE)),
+             };
+         }
+-        #[cfg(not(feature = "avx512"))]
++        #[cfg(not(all(target_arch = "x86_64", feature = "avx512")))]
+         let str_ptr = unsafe { super::scalar::str_impl_kind_scalar(buf) };
+-        #[cfg(feature = "avx512")]
++        #[cfg(all(target_arch = "x86_64", feature = "avx512"))]
+         let str_ptr = unsafe { STR_CREATE_FN(buf) };
+         debug_assert!(!str_ptr.is_null());
+         PyStr {

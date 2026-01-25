@@ -45,8 +45,8 @@
                         "uri": "git://git.openembedded.org/meta-openembedded;protocol=https"
                     }
                 },
-                "branch": "master",
-                "rev": "3e3f0eac0f599e92442d8c6c0000eb961d8c4170"
+                "branch": "master-next",
+                "rev": "cd95114ed10aa95c90c10ab995fcea7c9c04a8d4"
             },
             "path": "meta-openembedded"
         },
@@ -178,7 +178,9 @@
                         "description": "Distribution variants",
                         "options": ["distro/poky-altcfg"]
                     }
-                }
+                },
+                "setup-dir-name": "setup",
+                "use-full-setup-dir-name": false
             }
         ]
     }
