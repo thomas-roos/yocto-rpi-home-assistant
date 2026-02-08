@@ -19,7 +19,7 @@ SRC_URI = "\
 PV = "22.8.2"
 SRCREV = "5806560015553254c709ddbe4a235fa946b689c2"
 
-INSANE_SKIP:${PN} += "unknown-configure-option configure-unsafe"
+ERROR_QA:remove = "unknown-configure-option configure-unsafe"
 
 do_configure() {
     oe_runconf
