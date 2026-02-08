@@ -6,7 +6,6 @@ SRC_URI = "\
     file://config_site.h;subdir=${S}/pjlib/include/pj \
     file://arm-arch.patch \
     file://install-perms.patch \
-    file://0010-Avoid_deadlock_between_transport_and_transaction.patch \
 "
 
 SRCREV = "2f4bc29b2fa65cc29e50ba03f0b8b6de820eaf6b"
