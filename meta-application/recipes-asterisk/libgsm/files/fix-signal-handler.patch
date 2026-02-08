@@ -1,6 +1,6 @@
 Upstream-Status: Pending
 diff --git a/src/toast.c b/src/toast.c
-index 05cd0b3..3a0765d 100644
+index 05cd0b3..4889913 100644
 --- a/src/toast.c
 +++ b/src/toast.c
 @@ -211,7 +211,7 @@ static char * suffix P2((name, suf), char *name, char * suf)
@@ -21,3 +21,13 @@ index 05cd0b3..3a0765d 100644
  {
  	char * tmp = outname;
  
+@@ -253,7 +253,7 @@ static char * emalloc P1((len), size_t len)
+ 	if (!(s = malloc(len))) {
+ 		fprintf(stderr, "%s: failed to malloc %d bytes -- abort
+",
+ 			progname, (int)len);
+-		onintr();
++		onintr(0);
+ 		exit(1);
+ 	}
+ 	return s;

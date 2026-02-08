@@ -60,11 +60,14 @@ EXTRA_AUTORECONF += "\
 
 EXTRA_OECONF += "\
     --disable-shared \
-    --disable-tests \
 "
 
 ## Not SMP safe
 PARALLEL_MAKE = ""
+
+do_compile() {
+    oe_runmake lib
+}
 
 LD = "${CXX} ${LDFLAGS}"
 CXXFLAGS += "-Wno-deprecated"
