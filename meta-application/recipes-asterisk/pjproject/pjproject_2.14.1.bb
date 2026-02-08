@@ -8,6 +8,8 @@ SRC_URI = "\
 
 SRCREV = "2f4bc29b2fa65cc29e50ba03f0b8b6de820eaf6b"
 
+INSANE_SKIP:${PN} += "host-user-contaminated"
+
 inherit autotools-brokensep
 
 PACKAGECONFIG ??= "epoll ssl"
