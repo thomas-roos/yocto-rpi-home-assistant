@@ -9,7 +9,7 @@ SRC_URI = "\
     file://0010-Avoid_deadlock_between_transport_and_transaction.patch \
 "
 
-SRCREV = "7de6e686fee1642f5443a3f39f0e5ad5e478a117"
+SRCREV = "2f4bc29b2fa65cc29e50ba03f0b8b6de820eaf6b"
 
 inherit autotools-brokensep
 
