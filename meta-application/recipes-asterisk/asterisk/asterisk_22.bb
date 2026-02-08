@@ -19,6 +19,8 @@ SRC_URI = "\
 PV = "22.8.2"
 SRCREV = "5806560015553254c709ddbe4a235fa946b689c2"
 
+EXTRA_AUTORECONF = ""
+
 SRC_URI[moh-sounds.sha256sum] = "449fb810d16502c3052fedf02f7e77b36206ac5a145f3dacf4177843a2fcb538"
 SRC_URI[core-sounds-en-gsm.sha256sum] = "d79c3d2044d41da8f363c447dfccc140be86b4fcc41b1ca5a60a80da52f24f2d"
 
