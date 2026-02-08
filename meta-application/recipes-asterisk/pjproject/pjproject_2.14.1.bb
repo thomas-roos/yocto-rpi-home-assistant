@@ -4,8 +4,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 SRC_URI = "\
     git://github.com/pjsip/pjproject.git;protocol=https;nobranch=1 \
     file://config_site.h;subdir=${S}/pjlib/include/pj \
-    file://arm-arch.patch \
-    file://install-perms.patch \
 "
 
 SRCREV = "2f4bc29b2fa65cc29e50ba03f0b8b6de820eaf6b"
