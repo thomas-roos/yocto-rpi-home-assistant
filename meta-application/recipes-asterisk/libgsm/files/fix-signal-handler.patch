@@ -1,0 +1,23 @@
+Upstream-Status: Pending
+diff --git a/src/toast.c b/src/toast.c
+index 05cd0b3..3a0765d 100644
+--- a/src/toast.c
++++ b/src/toast.c
+@@ -211,7 +211,7 @@ static char * suffix P2((name, suf), char *name, char * suf)
+ }
+ 
+ 
+-static void catch_signals P1((fun), SIGHANDLER_T (*fun) ())
++static void catch_signals P1((fun), SIGHANDLER_T (*fun) (int))
+ {
+ #ifdef	SIGHUP
+ 	signal( SIGHUP,   fun );
+@@ -230,7 +230,7 @@ static void catch_signals P1((fun), SIGHANDLER_T (*fun) ())
+ #endif
+ }
+ 
+-static SIGHANDLER_T onintr P0()
++static SIGHANDLER_T onintr P1((sig), int sig)
+ {
+ 	char * tmp = outname;
+ 

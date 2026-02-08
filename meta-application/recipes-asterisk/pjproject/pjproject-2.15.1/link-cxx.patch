@@ -1,0 +1,15 @@
+Index: pjproject-2.15.1/pjlib/build/Makefile
+===================================================================
+--- pjproject-2.15.1.orig/pjlib/build/Makefile
++++ pjproject-2.15.1/pjlib/build/Makefile
+@@ -102,8 +102,8 @@ pjlib: $(PJLIB_LIB)
+ $(PJLIB_LIB): ../include/pj/config_site.h
+ 
+ $(PJLIB_SONAME): $(PJLIB_LIB)
+-$(PJLIB_LIB) $(PJLIB_SONAME):
+-	$(MAKE) -f $(RULES_MAK) APP=PJLIB app=pjlib $(subst /,$(HOST_PSEP),$(LIBDIR)/$@)
++$(PJLIB_LIB) $(PJLIB_SONAME):y
++	$(MAKE) -f $(RULES_MAK) APP=PJLIB app=pjlib $(subst /,$(HOST_PSEP),$(LIBDIR)/$@) LD='${CXX}'
+ 
+ ../include/pj/config_site.h:
+ 	touch ../include/pj/config_site.h

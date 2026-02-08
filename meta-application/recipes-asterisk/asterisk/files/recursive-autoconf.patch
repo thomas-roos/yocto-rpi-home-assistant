@@ -1,0 +1,13 @@
+Upstream-Status: Inappropriate [OE-specific]
+diff --git a/configure.ac b/configure.ac
+index 6389bdd..db0428d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -8,6 +8,7 @@ AC_CANONICAL_HOST
+ 
+ # check existence of the package
+ AC_CONFIG_SRCDIR([main/asterisk.c])
++true || AC_CONFIG_SUBDIRS([menuselect])
+ 
+ AC_COPYRIGHT("Asterisk")
+ 
