@@ -10,7 +10,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "720df1a53452983c1c832f624490e255cf389204"
+                "rev": "5127faf986d8543bb88e73cf3dccb407d80c9a25"
             },
             "path": "bitbake"
         },
@@ -22,7 +22,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "ac7327583aef83fd400190506f3147623de38b68"
+                "rev": "c6e2bfc538258086053a569c2143ad8bc9a840bd"
             },
             "path": "openembedded-core"
         },
@@ -34,7 +34,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "b3b659263566c4d2f2813190e72d93f8598a4c47"
+                "rev": "c23c19e0b300812bad314f1d0a901965315271ae"
             },
             "path": "meta-yocto"
         },
@@ -45,8 +45,8 @@
                         "uri": "git://git.openembedded.org/meta-openembedded;protocol=https"
                     }
                 },
-                "branch": "master",
-                "rev": "a555730e42f9c1e3ed2523b57565dbbb833d88af"
+                "branch": "master-next",
+                "rev": "cd95114ed10aa95c90c10ab995fcea7c9c04a8d4"
             },
             "path": "meta-openembedded"
         },
@@ -58,7 +58,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "11266f6fa350133704da2f1d7380ab4241cd8fea"
+                "rev": "96d6e240c3b92bd32baa00eb438b5948d8085e2f"
             },
             "path": "meta-rauc"
         },
@@ -82,7 +82,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "161be949b9f54484f30e3da26f8ef166ae0f2056"
+                "rev": "b9d649e1d4ace6b4d6e7cc5516e68e1397605ecf"
             },
             "path": "meta-raspberrypi"
         },
@@ -94,7 +94,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "8530eeae70676db7991bacbbd3bb874fcd198a8d"
+                "rev": "09370806a33b7cd83837059430eb9cc2fddd8ac5"
             },
              "path": "meta-python-ai"
         },
@@ -106,7 +106,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "c2185cd5ef225c6606341745ad9ffb02efe364d9"
+                "rev": "28d26fd95397bf575e65fcca0cbb302b1e9bc7ff"
             },
              "path": "meta-virtualization"
         },
@@ -118,7 +118,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "a7e53c02fc7c32d64f90cf138e22ab5580873170"
+                "rev": "3172c676a795815099be2f0b3fbf7dd229ad6bb8"
             },
              "path": "meta-sca"
         },
@@ -130,7 +130,7 @@
                     }
                 },
                 "branch": "main",
-                "rev": "c3998941ae2dd021302745e7f9a6362a67c3caad"
+                "rev": "74db67d56386d3706cb1e448edaaf7910ac37d75"
             },
              "path": "meta-clang-revival"
         },
@@ -142,7 +142,7 @@
                     }
                 },
                 "branch": "main",
-                "rev": "76ca029600f36440f4cd51a09197d303b13e8798"
+                "rev": "3aae74f8a1911a82b600f97807e3cb4754be0d21"
             },
             "path": "meta-homeassistant"
         }
@@ -178,7 +178,9 @@
                         "description": "Distribution variants",
                         "options": ["distro/poky-altcfg"]
                     }
-                }
+                },
+                "setup-dir-name": "setup",
+                "use-full-setup-dir-name": false
             }
         ]
     }
