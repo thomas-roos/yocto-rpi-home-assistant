@@ -23,8 +23,7 @@ index 05cd0b3..4889913 100644
  
 @@ -253,7 +253,7 @@ static char * emalloc P1((len), size_t len)
  	if (!(s = malloc(len))) {
- 		fprintf(stderr, "%s: failed to malloc %d bytes -- abort
-",
+ 		fprintf(stderr, "%s: failed to malloc %d bytes -- abort\n",
  			progname, (int)len);
 -		onintr();
 +		onintr(0);
