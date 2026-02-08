@@ -68,6 +68,10 @@ do_compile() {
     oe_runmake lib
 }
 
+do_install:append() {
+    chown -R root:root ${D}
+}
+
 LD = "${CXX} ${LDFLAGS}"
 CXXFLAGS += "-Wno-deprecated"
 
