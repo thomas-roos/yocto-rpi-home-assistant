@@ -1,0 +1,14 @@
+[Unit]
+Description=KNX Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/knxd /etc/knxd.conf
+Type=notify
+
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+Also=knxd.socket

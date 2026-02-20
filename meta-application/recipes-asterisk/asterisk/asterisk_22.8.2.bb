@@ -16,8 +16,7 @@ SRC_URI = "\
     file://asterisk.service \
     file://asterisk.socket \
 "
-PV = "22.8.2"
-SRCREV = "5806560015553254c709ddbe4a235fa946b689c2"
+SRCREV = "e470d8c69423357eb569343b6cd1eb09657cc4cc"
 
 ERROR_QA:remove = "unknown-configure-option configure-unsafe"
 

@@ -46,7 +46,7 @@
                     }
                 },
                 "branch": "master-next",
-                "rev": "cd95114ed10aa95c90c10ab995fcea7c9c04a8d4"
+                "rev": "efc80673fd7bdcb1875d1a5b76c188ade408ebd1"
             },
             "path": "meta-openembedded"
         },
@@ -94,7 +94,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "09370806a33b7cd83837059430eb9cc2fddd8ac5"
+                "rev": "7cdf952ed2887de74f178e7568d0a7418ddec2df"
             },
              "path": "meta-python-ai"
         },
@@ -142,7 +142,7 @@
                     }
                 },
                 "branch": "main",
-                "rev": "3aae74f8a1911a82b600f97807e3cb4754be0d21"
+                "rev": "c71a27f28fb95c92daaa3bf11464ead9e7fda448"
             },
             "path": "meta-homeassistant"
         }

@@ -20,7 +20,6 @@ PACKAGECONFIG ?= "\
     sqlite3 \
     libedit \
     libjwt \
-    pjproject \
 \
     timerfd \
     zlib \
@@ -137,9 +136,9 @@ do_configure_menuselect() {
 addtask do_configure_menuselect after do_configure before do_compile
 
 do_install:append() {
-	install -D -p -m 0644 ${WORKDIR}/asterisk.tmpfiles ${D}${libdir}/tmpfiles.d/asterisk.conf
-	install -D -p -m 0644 ${WORKDIR}/asterisk.socket   ${D}${systemd_system_unitdir}/asterisk.socket
-	install -D -p -m 0644 ${WORKDIR}/asterisk.service  ${D}${systemd_system_unitdir}/asterisk.service
+	install -D -p -m 0644 ${UNPACKDIR}/asterisk.tmpfiles ${D}${libdir}/tmpfiles.d/asterisk.conf
+	install -D -p -m 0644 ${UNPACKDIR}/asterisk.socket   ${D}${systemd_system_unitdir}/asterisk.socket
+	install -D -p -m 0644 ${UNPACKDIR}/asterisk.service  ${D}${systemd_system_unitdir}/asterisk.service
 
 	rm -rf ${D}/var/run
 	rm -rf ${D}/var/log
