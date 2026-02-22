@@ -1,4 +1,5 @@
-A yocto layer setup to build a Rasperry Pi 64 home assistant setup.
+A yocto layer setup to build a Raspberry Pi 64bit home assistant setup.
+Including ASTERISK for SIP and knxd for KNX connectivity.
 
 
 ## Building with bitbake-setup
