@@ -40,14 +40,14 @@ COPY_LIC_DIRS = "1"
 
 IMAGE_FEATURES += "read-only-rootfs"
 
-# this should be equal to sdimage-doorphone-ab_partition.wks.in file,
+# this should be equal to sdimage-ha_partition.wks.in file,
 # for rauc bundle generation wic file is not used!
 ROOTFS_POSTPROCESS_COMMAND += "rootfs_user_fstab"
 
 rootfs_user_fstab () {
 
 # Set hostname
-echo "doorphone" > ${IMAGE_ROOTFS}/${sysconfdir}/hostname
+echo "ha" > ${IMAGE_ROOTFS}/${sysconfdir}/hostname
 
 # overwrite the default fstab, adding customization for this image
 cat << EOF > ${IMAGE_ROOTFS}/${sysconfdir}/fstab
