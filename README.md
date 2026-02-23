@@ -17,12 +17,24 @@ git submodule update --init --recursive
 ```
 
 2. Initialize the build environment:
+
+For Raspberry Pi:
 ```bash
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ \
   init \
   $PWD/../../bitbake-setup.conf.json \
-  homeassistant distro/poky-altcfg application/ha core/yocto/sstate-mirror-cdn --non-interactive && \
+  homeassistantrpi distro/poky-altcfg --non-interactive && \
+  cd -
+```
+
+For QEMU x86-64 (debugging):
+```bash
+cd bitbake/bin/ && \
+./bitbake-setup --setting default top-dir-prefix $PWD/../../ \
+  init \
+  $PWD/../../bitbake-setup.conf.json \
+  homeassistantqemu distro/poky-altcfg --non-interactive && \
   cd -
 ```
 

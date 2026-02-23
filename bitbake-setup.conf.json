@@ -70,7 +70,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "fc5ff414b9b505b2693e9f154c8a4dff3e018a8f"
+                "rev": "25d58b788b28c5eb91a04f1bcc32b69f28abeb1d"
             },
             "path": "meta-rauc-community"
         },
@@ -151,7 +151,7 @@
         "configurations": [
             {
                 "name": "homeassistant",
-                "description": "Homeassistant for Raspberry Pi 64",
+                "description": "Homeassistant base configuration",
                 "bb-layers": [
                     "openembedded-core/meta",
                     "meta-yocto/meta-poky",
@@ -165,20 +165,41 @@
                     "meta-sca",
                     "meta-virtualization",
                     "meta-rauc",
-                    "meta-rauc-community/meta-rauc-raspberrypi",
-                    "meta-raspberrypi",
                     "meta-homeassistant"
                 ],
                 "bb-layers-file-relative": [
                     "meta-application"
                 ],
-				"oe-fragments": ["core/yocto/sstate-mirror-cdn", "machine/raspberrypi-armv8", "application/ha"],
+                "oe-fragments": ["core/yocto/sstate-mirror-cdn", "application/ha"],
                 "oe-fragments-one-of": {
                     "distro": {
                         "description": "Distribution variants",
                         "options": ["distro/poky-altcfg"]
                     }
                 },
+                "configurations": [
+                    {
+                        "name": "rpi",
+                        "description": "Raspberry Pi 64",
+                        "bb-layers": [
+                            "meta-rauc-community/meta-rauc-raspberrypi",
+                            "meta-raspberrypi"
+                        ],
+                        "oe-fragments": ["machine/raspberrypi-armv8"],
+                        "setup-dir-name": "raspberrypi-armv8",
+                        "use-full-setup-dir-name": false
+                    },
+                    {
+                        "name": "qemu",
+                        "description": "QEMU x86",
+                        "bb-layers": [
+                            "meta-rauc-community/meta-rauc-qemux86"
+                        ],
+                        "oe-fragments": ["machine/qemux86-64"],
+                        "setup-dir-name": "qemux86-64",
+                        "use-full-setup-dir-name": false
+                    }
+                ],
                 "setup-dir-name": "setup",
                 "use-full-setup-dir-name": false
             }
