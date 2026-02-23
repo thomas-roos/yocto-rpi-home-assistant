@@ -13,7 +13,7 @@ IMAGE_INSTALL += "\
     "
 
 ### rauc ###
-CORE_IMAGE_EXTRA_INSTALL:append = " rauc-grow-data-part"
+CORE_IMAGE_EXTRA_INSTALL:append:rpi = " rauc-grow-data-part"
 
 # only adding if device is rpi, as others might have a different partition layout
 IMAGE_INSTALL:append:rpi = " config-init"
