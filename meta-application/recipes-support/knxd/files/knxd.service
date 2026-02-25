@@ -3,7 +3,7 @@ Description=KNX Daemon
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/knxd /etc/knxd.conf
+ExecStart=/usr/bin/knxd /etc/knxd/knxd.conf
 Type=notify
 
 Restart=on-failure

@@ -34,13 +34,20 @@ cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ \
   init \
   $PWD/../../bitbake-setup.conf.json \
-  homeassistantqemu distro/poky-altcfg --non-interactive && \
+  homeassistantqemu qemu distro/poky-altcfg --non-interactive && \
   cd -
 ```
 
 3. Source the build environment:
+
+For Raspberry Pi:
 ```bash
-. ./bitbake-builds/setup/build/init-build-env
+. ./bitbake-builds/setupqemux86-64/build/init-build-env
+```
+
+For QEMU x86-64 (debugging):
+```bash
+. ./bitbake-builds/setupraspberrypi-armv8/build/init-build-env
 ```
 
 4. Build the image:
@@ -54,7 +61,6 @@ Or rauch bundle:
 bitbake ha-bundle
 ```
 
-
 5. Resulting image:
 
 ```bash
@@ -65,4 +71,11 @@ Or rauc bundle:
 
 ```bash
 ./bitbake-builds/setup/build/tmp/deploy/images/raspberrypi-armv8/ha-bundle-raspberrypi-armv8.raucb
+```
+
+
+Testing / Debugging with qemu:
+
+```bash
+runqemu snapshot nographic wic ovmf slirp
 ```

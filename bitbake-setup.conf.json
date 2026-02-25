@@ -138,11 +138,11 @@
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "https://github.com/meta-homeassistant/meta-homeassistant.git"
+                        "uri": "https://github.com/Gerry546/meta-homeassistant.git"
                     }
                 },
-                "branch": "main",
-                "rev": "c71a27f28fb95c92daaa3bf11464ead9e7fda448"
+                "branch": "dev",
+                "rev": "d8a0628c418cba8b351dcd4f12d7339fbad841db"
             },
             "path": "meta-homeassistant"
         }

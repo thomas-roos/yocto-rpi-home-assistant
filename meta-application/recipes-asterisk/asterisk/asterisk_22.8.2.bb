@@ -15,6 +15,10 @@ SRC_URI = "\
     file://asterisk.tmpfiles \
     file://asterisk.service \
     file://asterisk.socket \
+    file://pjsip.conf \
+    file://extensions.conf \
+    file://asterisk.conf \
+    file://modules.conf \
 "
 SRCREV = "e470d8c69423357eb569343b6cd1eb09657cc4cc"
 
@@ -28,3 +32,4 @@ SRC_URI[moh-sounds.sha256sum] = "449fb810d16502c3052fedf02f7e77b36206ac5a145f3da
 SRC_URI[core-sounds-en-gsm.sha256sum] = "d79c3d2044d41da8f363c447dfccc140be86b4fcc41b1ca5a60a80da52f24f2d"
 
 require asterisk.inc
+

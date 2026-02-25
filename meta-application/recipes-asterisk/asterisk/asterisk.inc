@@ -133,6 +133,7 @@ do_configure_menuselect[dirs] = "${B}/menuselect"
 do_configure_menuselect() {
 	./configure ${MENUSELECT_OECONF}
 }
+
 addtask do_configure_menuselect after do_configure before do_compile
 
 do_install:append() {
@@ -143,6 +144,12 @@ do_install:append() {
 	rm -rf ${D}/var/run
 	rm -rf ${D}/var/log
 	rm -rf ${D}/tmp
+
+    install -d ${D}${sysconfdir}/asterisk
+    install -m 0644 ${UNPACKDIR}/pjsip.conf ${D}${sysconfdir}/asterisk/
+    install -m 0644 ${UNPACKDIR}/extensions.conf ${D}${sysconfdir}/asterisk/
+    install -m 0644 ${UNPACKDIR}/asterisk.conf ${D}${sysconfdir}/asterisk/
+    install -m 0644 ${UNPACKDIR}/modules.conf ${D}${sysconfdir}/asterisk/
 }
 
 FILES:${PN} += "\
