@@ -73,7 +73,7 @@ Or rauc bundle:
 ./bitbake-builds/setup/build/tmp/deploy/images/raspberrypi-armv8/ha-bundle-raspberrypi-armv8.raucb
 ```
 
-## Tips and Tricks
+### Tips and Tricks
 
 Testing / Debugging with qemu:
 
@@ -96,10 +96,4 @@ ssh -o StrictHostKeyChecking=no root@ha
 Watch logs
 ```bash
 journalctl -xfeu homeassistant
-```
-
-
-Fix knx
-```bash
-sudo -u homeassistant pip3 install xknx==3.13.0 xknxproject==3.8.2
 ```

@@ -1,4 +1,4 @@
-SUMMARY = "My homeassistant image with A/B updates, asterisk, knxd and some optimizations for rauc"
+SUMMARY = "My homeassistant image with rauc A/B updates, asterisk, knxd"
 HOMEPAGE = "https://github.com/aws4embeddedlinux/meta-aws-demos"
 
 LICENSE = "MIT"
@@ -136,7 +136,7 @@ EXTRA_IMAGECMD:ext4 = "-i 4096 -b 4096 -E hash_seed=86ca73ff-7379-40bd-a098-fcb0
 # Use local.conf to specify additional systemd services to disable. To overwrite
 # the default list use SERVICES_TO_DISABLE:pn-systemd-container in local.conf
 # TODO: enable asterisk.service knxd.service knxd.socket knxd-net.socket
-SERVICES_TO_DISABLE:rpi = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service asterisk.service knxd.service knxd.socket knxd-net.socket"
+SERVICES_TO_DISABLE:rpi = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service knxd.service knxd.socket knxd-net.socket"
 SERVICES_TO_DISABLE:qemux86-64 = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service asterisk.service knxd.service knxd.socket knxd-net.socket"
 
 disable_systemd_services () {
@@ -164,10 +164,8 @@ enable_systemd_services () {
 ROOTFS_POSTPROCESS_COMMAND += "disable_systemd_services; enable_systemd_services;"
 
 ### homeassistant ###
-# require recipes-homeassistant/images/core-image-homeassistant-full.bb
-
 IMAGE_INSTALL:append = " python3-homeassistant python3-homeassistant-frontend"
-IMAGE_INSTALL:append = " python3-xknx python3-xknxproject python3-zipp"
+IMAGE_INSTALL:append = " python3-xknx python3-xknxproject python3-pyzipper knx-frontend python3-striprtf python3-pycryptodomex"
 
 IMAGE_INSTALL:append = " python3-pysmlight"
 

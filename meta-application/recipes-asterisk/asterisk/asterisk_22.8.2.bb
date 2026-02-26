@@ -17,7 +17,6 @@ SRC_URI = "\
     file://asterisk.socket \
     file://pjsip.conf \
     file://extensions.conf \
-    file://asterisk.conf \
     file://modules.conf \
 "
 SRCREV = "e470d8c69423357eb569343b6cd1eb09657cc4cc"
