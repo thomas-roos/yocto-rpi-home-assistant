@@ -177,6 +177,8 @@ IMAGE_INSTALL:append = " \
     python3-zigpy-znp \
 "		
 
+IMAGE_INSTALL:append = " python3-roborock"
+
 ### additional ###
 IMAGE_INSTALL:append = " asterisk"
 

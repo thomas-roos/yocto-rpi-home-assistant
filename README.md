@@ -97,3 +97,7 @@ Watch logs
 ```bash
 journalctl -xfeu homeassistant
 ```
+
+Todo:
+[Feb 26 13:59:06] ERROR[690]: loader.c:292 module_load_error: Error loading module 'pjsip': /usr/lib/asterisk/modules/pjsip.so: cannot open shared object file: No such file or directory
+

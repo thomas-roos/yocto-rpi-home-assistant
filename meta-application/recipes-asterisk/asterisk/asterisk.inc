@@ -148,7 +148,6 @@ do_install:append() {
     install -d ${D}${sysconfdir}/asterisk
     install -m 0644 ${UNPACKDIR}/pjsip.conf ${D}${sysconfdir}/asterisk/
     install -m 0644 ${UNPACKDIR}/extensions.conf ${D}${sysconfdir}/asterisk/
-    install -m 0644 ${UNPACKDIR}/asterisk.conf ${D}${sysconfdir}/asterisk/
     install -m 0644 ${UNPACKDIR}/modules.conf ${D}${sysconfdir}/asterisk/
 }
 
