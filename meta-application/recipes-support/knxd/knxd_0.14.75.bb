@@ -24,8 +24,9 @@ do_install:append() {
     install -d ${D}${systemd_unitdir}/system
     install -m 0644 ${UNPACKDIR}/knxd.service ${D}${systemd_unitdir}/system
     install -m 0644 ${UNPACKDIR}/knxd.socket ${D}${systemd_unitdir}/system
+    
     install -d ${D}${sysconfdir}/knxd
-    install -m 0644 ${UNPACKDIR}/knxd.conf ${D}${sysconfdir}/knxd/
+    mv ${D}${sysconfdir}/knxd.conf ${D}${sysconfdir}/knxd/
 
     rm -r ${D}${libdir}/sysusers.d
 }
@@ -38,4 +39,3 @@ FILES:${PN}-examples += "${datadir}/knxd/examples \
                         "
 
 SYSTEMD_SERVICE:${PN} = "knxd.service knxd.socket knxd-net.socket"
-

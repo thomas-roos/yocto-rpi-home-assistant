@@ -40,7 +40,7 @@ COPY_LIC_MANIFEST = "1"
 
 COPY_LIC_DIRS = "1"
 
-IMAGE_FEATURES += "read-only-rootfs"
+# IMAGE_FEATURES += "read-only-rootfs"
 
 # fstab should be equal to sdimage-ha_partition.wks.in file,
 # for rauc bundle generation wic file is not used!
@@ -96,16 +96,14 @@ if [ -n "$(ls -A ${IMAGE_ROOTFS}/etc/knxd 2>/dev/null)" ]; then
 fi
 
 install -d ${IMAGE_ROOTFS}/data/var/lib/homeassistant
-if [ -n "$(ls -A ${IMAGE_ROOTFS}/etc/systemd/network 2>/dev/null)" ]; then
+chown homeassistant:homeassistant ${IMAGE_ROOTFS}/data/var/lib/homeassistant
+if [ -n "$(ls -A ${IMAGE_ROOTFS}/var/lib/homeassistant 2>/dev/null)" ]; then
     mv -f ${IMAGE_ROOTFS}/var/lib/homeassistant/* ${IMAGE_ROOTFS}/data/var/lib/homeassistant
 fi
 
 # decided to do here instead of a bbappend of wpa:supplicant
-install -d ${IMAGE_ROOTFS}/${sysconfdir}/systemd/system/multi-user.target.wants/
-ln -sf /${libdir}/systemd/system/wpa_supplicant@.service ${IMAGE_ROOTFS}/${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@wlan0.service
-
-# enable systemd-time-wait-sync as this is important to have a correct clock
-ln -sf /${libdir}/systemd/system/systemd-time-wait-sync.service ${IMAGE_ROOTFS}/${sysconfdir}/systemd/system/multi-user.target.wants/
+# install -d ${IMAGE_ROOTFS}/${sysconfdir}/systemd/system/multi-user.target.wants/
+# ln -sf /${libdir}/systemd/system/wpa_supplicant@.service ${IMAGE_ROOTFS}/${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@wlan0.service
 
 # end rootfs_user_fstab_common
 }
@@ -113,7 +111,7 @@ ln -sf /${libdir}/systemd/system/systemd-time-wait-sync.service ${IMAGE_ROOTFS}/
 rootfs_user_fstab_rpi () {
 cat << EOF >> ${IMAGE_ROOTFS}/${sysconfdir}/fstab
 LABEL=boot    /boot   vfat    defaults         0       0
-/data/etc/wpa_supplicant             /etc/wpa_supplicant             none    bind            0       0
+# /data/etc/wpa_supplicant             /etc/wpa_supplicant             none    bind            0       0
 /data/var/lib/alsa      /var/lib/alsa      none    bind            0       0
 EOF
 # end rootfs_user_fstab_rpi
@@ -134,32 +132,12 @@ IMAGE_ROOTFS_ALIGNMENT = "4"
 # reduce the image delta size (keep oe-core's 4K bytes-per-inode)
 EXTRA_IMAGECMD:ext4 = "-i 4096 -b 4096 -E hash_seed=86ca73ff-7379-40bd-a098-fcb03a6e719d"
 
-### homeassistant ###
-# require recipes-homeassistant/images/core-image-homeassistant-full.bb
-
-IMAGE_INSTALL:append = " python3-homeassistant"
-
-### additional ###
-IMAGE_INSTALL:append = " asterisk"
-
-IMAGE_INSTALL:append = " knxd"
-
-# debug tools
-IMAGE_INSTALL:append = " lsof ldd"
-
-IMAGE_INSTALL:append = " tmux"
-GLIBC_GENERATE_LOCALES = "en_US.UTF-8 UTF-8"
-IMAGE_INSTALL:append = " glibc-utils localedef "
-IMAGE_INSTALL:append = " ssh openssh-sshd openssh-sftp"
-IMAGE_INSTALL:append = " python3-misc python3-venv python3-tomllib python3-ensurepip libcgroup python3-pip"
-
-
 # taken from meta-virtualizion
 # Use local.conf to specify additional systemd services to disable. To overwrite
 # the default list use SERVICES_TO_DISABLE:pn-systemd-container in local.conf
-SERVICES_TO_DISABLE:rpi = "systemd-userdbd.service systemd-networkd-persistent-storage.service"
-SERVICES_TO_DISABLE:qemux86-64 = "systemd-userdbd.service systemd-networkd-persistent-storage.service asterisk.service knxd.service knxd.socket knxd-net.socket"
-
+# TODO: enable asterisk.service knxd.service knxd.socket knxd-net.socket
+SERVICES_TO_DISABLE:rpi = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service asterisk.service knxd.service knxd.socket knxd-net.socket"
+SERVICES_TO_DISABLE:qemux86-64 = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service asterisk.service knxd.service knxd.socket knxd-net.socket"
 
 disable_systemd_services () {
 	SERVICES_TO_DISABLE="${SERVICES_TO_DISABLE}"
@@ -184,3 +162,30 @@ enable_systemd_services () {
 }
 
 ROOTFS_POSTPROCESS_COMMAND += "disable_systemd_services; enable_systemd_services;"
+
+### homeassistant ###
+# require recipes-homeassistant/images/core-image-homeassistant-full.bb
+
+IMAGE_INSTALL:append = " python3-homeassistant python3-homeassistant-frontend"
+IMAGE_INSTALL:append = " python3-xknx python3-xknxproject python3-zipp"
+
+IMAGE_INSTALL:append = " python3-pysmlight"
+
+IMAGE_INSTALL:append = " \
+    python3-zigpy \
+    python3-zigpy-deconz \
+    python3-zigpy-xbee \
+    python3-zigpy-zigate \
+    python3-zigpy-znp \
+"		
+
+### additional ###
+IMAGE_INSTALL:append = " asterisk"
+
+IMAGE_INSTALL:append = " knxd"
+
+# debug tools
+IMAGE_INSTALL:append = " lsof ldd"
+
+# misc
+IMAGE_INSTALL:append = " python3-misc python3-venv python3-tomllib python3-ensurepip libcgroup python3-pip"

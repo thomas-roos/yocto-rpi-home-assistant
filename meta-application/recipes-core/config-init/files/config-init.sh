@@ -10,12 +10,14 @@ if [ -e /dev/mmcblk0p1 ]; then
         mv /tmp/mmcblk0p1/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
         chmod 600 /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
         sync
+        reboot
     fi
     if [ -f /tmp/mmcblk0p1/wlan.network ]; then
         echo "wlan.network found"
         mv /tmp/mmcblk0p1/wlan.network  /etc/systemd/network/
         chmod 644 /etc/systemd/network/wlan.network
         sync
+        reboot
     fi
     umount /tmp/mmcblk0p1
     sync
