@@ -66,6 +66,7 @@ LABEL=data     /data     ext4    x-systemd.growfs        0       0
 /data/etc/asterisk            /etc/asterisk            none    bind            0       0
 /data/etc/knxd            /etc/knxd            none    bind            0       0
 /data/var/lib/homeassistant            /var/lib/homeassistant            none    bind            0       0
+/data/var/lib/asterisk            /var/lib/asterisk            none    bind            0       0
 EOF
 
 install -d -m 0755 ${IMAGE_ROOTFS}/data
@@ -99,6 +100,14 @@ install -d ${IMAGE_ROOTFS}/data/var/lib/homeassistant
 chown homeassistant:homeassistant ${IMAGE_ROOTFS}/data/var/lib/homeassistant
 if [ -n "$(ls -A ${IMAGE_ROOTFS}/var/lib/homeassistant 2>/dev/null)" ]; then
     mv -f ${IMAGE_ROOTFS}/var/lib/homeassistant/* ${IMAGE_ROOTFS}/data/var/lib/homeassistant
+fi
+
+# astdb.sqlite3, voicemail, sounds cache etc. should survive RAUC updates,
+# same as /etc/asterisk already does
+install -d ${IMAGE_ROOTFS}/data/var/lib/asterisk
+chown asterisk:asterisk ${IMAGE_ROOTFS}/data/var/lib/asterisk
+if [ -n "$(ls -A ${IMAGE_ROOTFS}/var/lib/asterisk 2>/dev/null)" ]; then
+    mv -f ${IMAGE_ROOTFS}/var/lib/asterisk/* ${IMAGE_ROOTFS}/data/var/lib/asterisk
 fi
 
 # decided to do here instead of a bbappend of wpa:supplicant
@@ -135,9 +144,17 @@ EXTRA_IMAGECMD:ext4 = "-i 4096 -b 4096 -E hash_seed=86ca73ff-7379-40bd-a098-fcb0
 # taken from meta-virtualizion
 # Use local.conf to specify additional systemd services to disable. To overwrite
 # the default list use SERVICES_TO_DISABLE:pn-systemd-container in local.conf
-# TODO: enable asterisk.service knxd.service knxd.socket knxd-net.socket
-SERVICES_TO_DISABLE:rpi = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service knxd.service knxd.socket knxd-net.socket"
+# TODO: enable asterisk.service
+#
+# knxd.socket/knxd-net.socket stay masked: this knxd build has no systemd
+# socket-activation module, so leaving them enabled would just hang clients on
+# /run/knx. knxd.service itself must NOT be masked here (see SERVICES_TO_ENABLE
+# below) - masking it in the rootfs and only enabling it from the /data overlay
+# doesn't work, because /data mounts after systemd's unit-dir scan at boot.
+SERVICES_TO_DISABLE:rpi = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service knxd.socket knxd-net.socket"
 SERVICES_TO_DISABLE:qemux86-64 = "systemd-userdbd.service systemd-userdbd.socket systemd-networkd-persistent-storage.service asterisk.service knxd.service knxd.socket knxd-net.socket"
+
+SERVICES_TO_ENABLE:rpi = "knxd.service"
 
 disable_systemd_services () {
 	SERVICES_TO_DISABLE="${SERVICES_TO_DISABLE}"
@@ -183,6 +200,12 @@ IMAGE_INSTALL:append = " python3-roborock"
 IMAGE_INSTALL:append = " asterisk"
 
 IMAGE_INSTALL:append = " knxd"
+
+# MQTT broker for sensors (e.g. water measurement) to publish to; also usable
+# by HA's own MQTT integration. Default mosquitto.conf (unmodified) already
+# listens on 0.0.0.0:1883 with anonymous access, matching this image's
+# existing trusted-LAN security posture (empty root password, open SSH, etc.)
+IMAGE_INSTALL:append = " mosquitto mosquitto-clients"
 
 # debug tools
 IMAGE_INSTALL:append = " lsof ldd"

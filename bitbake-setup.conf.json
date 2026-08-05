@@ -6,11 +6,11 @@
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "git://git.openembedded.org/bitbake;protocol=https"
+                        "uri": "https://git.openembedded.org/bitbake"
                     }
                 },
                 "branch": "master",
-                "rev": "5127faf986d8543bb88e73cf3dccb407d80c9a25"
+                "rev": "c870f5bd96ad02efc02c58133c27bdae3a300e3e"
             },
             "path": "bitbake"
         },
@@ -18,11 +18,11 @@
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "git://git.openembedded.org/openembedded-core;protocol=https"
+                        "uri": "https://git.openembedded.org/openembedded-core"
                     }
                 },
                 "branch": "master",
-                "rev": "c6e2bfc538258086053a569c2143ad8bc9a840bd"
+                "rev": "45d9c3f1a060d6d89a40837fb860b39ba44415ff"
             },
             "path": "openembedded-core"
         },
@@ -30,11 +30,11 @@
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "git://git.yoctoproject.org/meta-yocto;protocol=https"
+                        "uri": "https://git.yoctoproject.org/meta-yocto"
                     }
                 },
                 "branch": "master",
-                "rev": "c23c19e0b300812bad314f1d0a901965315271ae"
+                "rev": "9c6cf36c3511b94957aba04002d98bec665e9f1e"
             },
             "path": "meta-yocto"
         },
@@ -42,11 +42,11 @@
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "git://git.openembedded.org/meta-openembedded;protocol=https"
+                        "uri": "https://git.openembedded.org/meta-openembedded"
                     }
                 },
                 "branch": "master-next",
-                "rev": "efc80673fd7bdcb1875d1a5b76c188ade408ebd1"
+                "rev": "bb24ed1cbb771b79f0c496a5c3dd910c1a3b6373"
             },
             "path": "meta-openembedded"
         },
@@ -58,7 +58,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "96d6e240c3b92bd32baa00eb438b5948d8085e2f"
+                "rev": "908df926a92200184416e2e48a8d0b08ca4b8adf"
             },
             "path": "meta-rauc"
         },
@@ -70,7 +70,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "25d58b788b28c5eb91a04f1bcc32b69f28abeb1d"
+                "rev": "00228100ab6dfb4ea53514c15cba02c0d2fa985e"
             },
             "path": "meta-rauc-community"
         },
@@ -78,11 +78,11 @@
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "git://git.yoctoproject.org/meta-raspberrypi;protocol=https"
+                        "uri": "https://git.yoctoproject.org/meta-raspberrypi"
                     }
                 },
                 "branch": "master",
-                "rev": "b9d649e1d4ace6b4d6e7cc5516e68e1397605ecf"
+                "rev": "a0ebcf5639b391690b27381cc65c56c157a0981b"
             },
             "path": "meta-raspberrypi"
         },
@@ -94,21 +94,21 @@
                     }
                 },
                 "branch": "master",
-                "rev": "7cdf952ed2887de74f178e7568d0a7418ddec2df"
+                "rev": "2bf61d562a0223a6643a24c17589e7bdc69d0e70"
             },
-             "path": "meta-python-ai"
+            "path": "meta-python-ai"
         },
         "meta-virtualization": {
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "git://git.yoctoproject.org/meta-virtualization;protocol=https"
+                        "uri": "https://git.yoctoproject.org/meta-virtualization"
                     }
                 },
                 "branch": "master",
-                "rev": "28d26fd95397bf575e65fcca0cbb302b1e9bc7ff"
+                "rev": "099a08b2c251431c45f56de1fec9057609dfdbda"
             },
-             "path": "meta-virtualization"
+            "path": "meta-virtualization"
         },
         "meta-sca": {
             "git-remote": {
@@ -118,9 +118,9 @@
                     }
                 },
                 "branch": "master",
-                "rev": "3172c676a795815099be2f0b3fbf7dd229ad6bb8"
+                "rev": "cb76163e120e535b0ea491849588dbec5429d710"
             },
-             "path": "meta-sca"
+            "path": "meta-sca"
         },
         "meta-clang-revival": {
             "git-remote": {
@@ -130,9 +130,9 @@
                     }
                 },
                 "branch": "main",
-                "rev": "74db67d56386d3706cb1e448edaaf7910ac37d75"
+                "rev": "604934dd353b23ddef30269450765c048a5aee34"
             },
-             "path": "meta-clang-revival"
+            "path": "meta-clang-revival"
         },
         "meta-homeassistant": {
             "git-remote": {
@@ -141,8 +141,8 @@
                         "uri": "https://github.com/Gerry546/meta-homeassistant.git"
                     }
                 },
-                "branch": "dev",
-                "rev": "d8a0628c418cba8b351dcd4f12d7339fbad841db"
+                "branch": "main",
+                "rev": "c39471ab18555a771b811f87365bc9548b2c2788"
             },
             "path": "meta-homeassistant"
         }
@@ -170,11 +170,16 @@
                 "bb-layers-file-relative": [
                     "meta-application"
                 ],
-                "oe-fragments": ["core/yocto/sstate-mirror-cdn", "application/ha"],
+                "oe-fragments": [
+                    "core/yocto/sstate-mirror-cdn",
+                    "application/ha"
+                ],
                 "oe-fragments-one-of": {
                     "distro": {
                         "description": "Distribution variants",
-                        "options": ["distro/poky-altcfg"]
+                        "options": [
+                            "distro/poky-altcfg"
+                        ]
                     }
                 },
                 "configurations": [
@@ -185,7 +190,9 @@
                             "meta-rauc-community/meta-rauc-raspberrypi",
                             "meta-raspberrypi"
                         ],
-                        "oe-fragments": ["machine/raspberrypi-armv8"],
+                        "oe-fragments": [
+                            "machine/raspberrypi-armv8"
+                        ],
                         "setup-dir-name": "raspberrypi-armv8",
                         "use-full-setup-dir-name": false
                     },
@@ -195,7 +202,9 @@
                         "bb-layers": [
                             "meta-rauc-community/meta-rauc-qemux86"
                         ],
-                        "oe-fragments": ["machine/qemux86-64"],
+                        "oe-fragments": [
+                            "machine/qemux86-64"
+                        ],
                         "setup-dir-name": "qemux86-64",
                         "use-full-setup-dir-name": false
                     }

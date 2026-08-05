@@ -26,6 +26,7 @@ PACKAGECONFIG ?= "\
     ncurses \
     asteriskssl openssl crypto \
     gsm \
+    pjproject \
 "
 # Optional features
 PACKAGECONFIG[libjwt] = "--with-libjwt,--without-libjwt,libjwt"

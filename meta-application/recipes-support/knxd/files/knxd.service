@@ -11,4 +11,7 @@ RestartSec=2
 
 [Install]
 WantedBy=multi-user.target
-Also=knxd.socket
+# No Also=knxd.socket: this knxd build has no systemd socket-activation module,
+# and knxd.socket/knxd-net.socket are intentionally masked (see ha-image.bb) to
+# avoid clients hanging on /run/knx. Also= would also block `systemctl enable`
+# on this masked unit.

@@ -1,0 +1,41 @@
+From: Thomas Roos <thomas@exein.io>
+Subject: [PATCH] setup.py: tolerate setuptools without pkg_resources
+
+Recent setuptools no longer ships pkg_resources, which this ancient
+setup.py only used for a legacy bootstrap trick (registering our own
+entry point before it's installed, for old setuptools_scm interop).
+Modern setuptools_scm doesn't need this dance, so just skip it when
+pkg_resources isn't available instead of failing the build.
+
+Upstream-Status: Inappropriate [project is unmaintained]
+Signed-off-by: Thomas Roos <thomas@exein.io>
+---
+--- a/setup.py
++++ b/setup.py
+@@ -1,7 +1,10 @@
+ from os.path import dirname, join
+ from shutil import rmtree
+
+-from pkg_resources import DistributionNotFound, load_entry_point, working_set
++try:
++    from pkg_resources import DistributionNotFound, load_entry_point, working_set
++except ImportError:
++    DistributionNotFound = load_entry_point = working_set = None
+ from setuptools import find_packages, setup
+
+
+@@ -31,9 +34,10 @@
+ rmtree(meta['name']+'.egg-info', ignore_errors=True)
+
+ # Bootstrap
+-try:
+-    load_entry_point(meta['name'], ENTRY_GROUP, ENTRY_NAME)
+-except (DistributionNotFound, ImportError):
+-    working_set.add_entry('.')
++if load_entry_point is not None:
++    try:
++        load_entry_point(meta['name'], ENTRY_GROUP, ENTRY_NAME)
++    except (DistributionNotFound, ImportError):
++        working_set.add_entry('.')
+
+ setup(use_scm_version=True, **meta)
