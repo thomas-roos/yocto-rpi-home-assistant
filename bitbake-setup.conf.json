@@ -22,7 +22,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "45d9c3f1a060d6d89a40837fb860b39ba44415ff"
+                "rev": "90e0db919e93e691c725788be2842acb2ee0610b"
             },
             "path": "openembedded-core"
         },
@@ -46,7 +46,7 @@
                     }
                 },
                 "branch": "master-next",
-                "rev": "bb24ed1cbb771b79f0c496a5c3dd910c1a3b6373"
+                "rev": "7d033cd179c72efac8c2a457104336e5a276d825"
             },
             "path": "meta-openembedded"
         },
@@ -58,7 +58,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "908df926a92200184416e2e48a8d0b08ca4b8adf"
+                "rev": "352f4d3cf33c3f3540ab044955b88efec73dbc49"
             },
             "path": "meta-rauc"
         },
@@ -106,7 +106,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "099a08b2c251431c45f56de1fec9057609dfdbda"
+                "rev": "e4aed393ce551b3141d4594330fc654abaa2d4cf"
             },
             "path": "meta-virtualization"
         },
@@ -138,11 +138,11 @@
             "git-remote": {
                 "remotes": {
                     "origin": {
-                        "uri": "https://github.com/Gerry546/meta-homeassistant.git"
+                        "uri": "https://github.com/meta-homeassistant/meta-homeassistant.git"
                     }
                 },
-                "branch": "main",
-                "rev": "c39471ab18555a771b811f87365bc9548b2c2788"
+                "branch": "wrynose",
+                "rev": "ce6843f37aebd6a1ef2f0f6f25f3701fda8c5228"
             },
             "path": "meta-homeassistant"
         }
