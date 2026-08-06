@@ -186,6 +186,8 @@ IMAGE_INSTALL:append = " python3-xknx python3-xknxproject python3-pyzipper knx-f
 
 IMAGE_INSTALL:append = " python3-pysmlight"
 
+IMAGE_INSTALL:append = " sax-battery-ha"
+
 IMAGE_INSTALL:append = " \
     python3-zigpy \
     python3-zigpy-deconz \
