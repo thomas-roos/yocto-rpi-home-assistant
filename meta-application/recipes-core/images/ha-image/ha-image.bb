@@ -65,6 +65,7 @@ LABEL=data     /data     ext4    x-systemd.growfs        0       0
 /data/etc/systemd/system            /etc/systemd/system            none    bind            0       0
 /data/etc/asterisk            /etc/asterisk            none    bind            0       0
 /data/etc/knxd            /etc/knxd            none    bind            0       0
+/data/etc/sml2mqtt            /etc/sml2mqtt            none    bind            0       0
 /data/var/lib/homeassistant            /var/lib/homeassistant            none    bind            0       0
 /data/var/lib/asterisk            /var/lib/asterisk            none    bind            0       0
 EOF
@@ -94,6 +95,11 @@ fi
 install -d ${IMAGE_ROOTFS}/data/etc/knxd
 if [ -n "$(ls -A ${IMAGE_ROOTFS}/etc/knxd 2>/dev/null)" ]; then
     mv -f ${IMAGE_ROOTFS}/etc/knxd/* ${IMAGE_ROOTFS}/data/etc/knxd
+fi
+
+install -d ${IMAGE_ROOTFS}/data/etc/sml2mqtt
+if [ -n "$(ls -A ${IMAGE_ROOTFS}/etc/sml2mqtt 2>/dev/null)" ]; then
+    mv -f ${IMAGE_ROOTFS}/etc/sml2mqtt/* ${IMAGE_ROOTFS}/data/etc/sml2mqtt
 fi
 
 install -d ${IMAGE_ROOTFS}/data/var/lib/homeassistant
@@ -188,6 +194,10 @@ IMAGE_INSTALL:append = " python3-pysmlight"
 
 IMAGE_INSTALL:append = " sax-battery-ha"
 
+IMAGE_INSTALL:append = " easycontrols-ha"
+
+IMAGE_INSTALL:append = " luxtronik-ha"
+
 IMAGE_INSTALL:append = " \
     python3-zigpy \
     python3-zigpy-deconz \
@@ -208,6 +218,15 @@ IMAGE_INSTALL:append = " knxd"
 # listens on 0.0.0.0:1883 with anonymous access, matching this image's
 # existing trusted-LAN security posture (empty root password, open SSH, etc.)
 IMAGE_INSTALL:append = " mosquitto mosquitto-clients"
+
+# SML smart meter (D0/IR reader on /dev/ttyUSB0) to MQTT bridge, publishes to
+# the mosquitto broker above under topic prefix "smartmeter"
+IMAGE_INSTALL:append = " sml2mqtt"
+
+# Home Assistant's built-in ollama (local LLM), miele, and reolink
+# integrations need these pip requirements, which aren't in any layer
+# as a recipe yet
+IMAGE_INSTALL:append = " python3-ollama python3-pymiele python3-reolink-aio"
 
 # debug tools
 IMAGE_INSTALL:append = " lsof ldd"
