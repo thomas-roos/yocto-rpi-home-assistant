@@ -1,6 +1,13 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://homeassistant.service"
 
+# meta-homeassistant's own recipe already carries 0001-0004, so this one
+# continues the numbering. It fixes the tibber integration reloading its
+# config entry once an hour because the OAuth access token (valid 3600s) is
+# captured once at setup and never refreshed before use - see the patch
+# header and the "Tibber OAuth token" section of the top-level README.
+SRC_URI += "file://0005-tibber-refresh-oauth-token-before-api-calls.patch"
+
 # Pin a static UID/GID for the homeassistant user instead of relying on
 # dynamic system-user allocation order. Without this, a rebuild can hand
 # its UID to a different user (it happened: systemd-network took UID 990

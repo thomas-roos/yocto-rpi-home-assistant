@@ -68,6 +68,7 @@ LABEL=data     /data     ext4    x-systemd.growfs        0       0
 /data/etc/sml2mqtt            /etc/sml2mqtt            none    bind            0       0
 /data/var/lib/homeassistant            /var/lib/homeassistant            none    bind            0       0
 /data/var/lib/asterisk            /var/lib/asterisk            none    bind            0       0
+/data/var/lib/tailscale            /var/lib/tailscale            none    bind            0       0
 EOF
 
 install -d -m 0755 ${IMAGE_ROOTFS}/data
@@ -114,6 +115,13 @@ install -d ${IMAGE_ROOTFS}/data/var/lib/asterisk
 chown asterisk:asterisk ${IMAGE_ROOTFS}/data/var/lib/asterisk
 if [ -n "$(ls -A ${IMAGE_ROOTFS}/var/lib/asterisk 2>/dev/null)" ]; then
     mv -f ${IMAGE_ROOTFS}/var/lib/asterisk/* ${IMAGE_ROOTFS}/data/var/lib/asterisk
+fi
+
+# Tailscale's node key / machine identity lives here. Without this it would be
+# wiped by every rootfs update and the device would need re-authenticating.
+install -d -m 0700 ${IMAGE_ROOTFS}/data/var/lib/tailscale
+if [ -n "$(ls -A ${IMAGE_ROOTFS}/var/lib/tailscale 2>/dev/null)" ]; then
+    mv -f ${IMAGE_ROOTFS}/var/lib/tailscale/* ${IMAGE_ROOTFS}/data/var/lib/tailscale
 fi
 
 # decided to do here instead of a bbappend of wpa:supplicant
@@ -198,6 +206,14 @@ IMAGE_INSTALL:append = " easycontrols-ha"
 
 IMAGE_INSTALL:append = " luxtronik-ha"
 
+# SIP endpoint inside Home Assistant, registered against the local asterisk as
+# extension 1104 and part of the doorphone group call
+IMAGE_INSTALL:append = " hass-sip"
+
+# Lovelace graph card - needs a resource entry in .storage/lovelace_resources
+# on the device before it is usable, see the recipe's trailing comment
+IMAGE_INSTALL:append = " apexcharts-card"
+
 IMAGE_INSTALL:append = " \
     python3-zigpy \
     python3-zigpy-deconz \
@@ -227,6 +243,14 @@ IMAGE_INSTALL:append = " sml2mqtt"
 # integrations need these pip requirements, which aren't in any layer
 # as a recipe yet
 IMAGE_INSTALL:append = " python3-ollama python3-pymiele python3-reolink-aio"
+
+# Tailscale, for reaching Home Assistant from outside the LAN without port
+# forwarding. NOTE the HA "tailscale" integration is NOT this - that one only
+# polls the Tailscale API to show tailnet devices as sensors and provides no
+# connectivity. Needs a one-off "tailscale up" on the device to authenticate;
+# the resulting node key lives in /var/lib/tailscale, which is bind-mounted
+# from /data below so it survives RAUC rootfs updates.
+IMAGE_INSTALL:append = " tailscale tailscaled"
 
 # debug tools
 IMAGE_INSTALL:append = " lsof ldd"

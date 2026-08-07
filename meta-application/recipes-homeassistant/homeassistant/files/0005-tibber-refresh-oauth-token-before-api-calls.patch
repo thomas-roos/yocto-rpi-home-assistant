@@ -1,0 +1,113 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Thomas Roos <thomas@exein.io>
+Date: Fri, 7 Aug 2026 17:30:00 +0000
+Subject: [PATCH] tibber: refresh the OAuth token before every API call
+
+Since the integration moved to OAuth2 (the "cloud" auth implementation),
+the access token Tibber hands out is only valid for 3600 seconds.
+
+TibberRuntimeData.async_get_client() already does the right thing - it
+calls OAuth2Session.async_ensure_token_valid() and pushes the resulting
+token into the shared tibber.Tibber client with set_access_token(). The
+problem is that nothing calls it after setup: the client object is
+resolved once in async_setup_entry() and both the data coordinator and
+the electricity-price sensor then keep using that captured object, so
+they keep presenting the token that was valid at setup time.
+
+One hour after setup the token expires and the next call fails with
+
+  UNAUTHENTICATED / "exp" claim timestamp check failed
+
+which pyTibber raises as InvalidLoginError/FatalHttpExceptionError. The
+coordinator treats that as fatal and reloads the whole config entry,
+which is what actually refreshes the token - so the integration limps
+along, reloading itself once an hour. Observed effect: sensor.*_monthly_*
+sit at "unknown" for the ~20 minutes between the reload and the next
+coordinator run, and the electricity price sensor blips "unavailable"
+every hour.
+
+Re-resolve the client through runtime_data before touching the API in
+both places, so the session refreshes the token when it is close to
+expiry instead of after it has already been rejected.
+
+This is a backport, not a new fix. The integration's codeowner fixed the
+same bug upstream in
+
+  https://github.com/home-assistant/core/pull/164295
+  "Fix Tibber update token", merged 2026-03-17
+
+which adds the identical
+`await self.config_entry.runtime_data.async_get_client(self.hass)` call
+to TibberDataCoordinator._async_update_data(), plus a larger refactor
+that moves the price sensor onto its own coordinator (later renamed to
+the self._async_get_client() helper in 2026.5.0). That landed in
+2026.4.0 and was never backported to a point release - 2026.3.1 through
+2026.3.4 all still carry the bug.
+
+So this patch is only needed while meta-homeassistant pins Home
+Assistant 2026.3.0. Drop it as soon as that recipe moves to 2026.4.0 or
+newer; the change below will then be redundant and will fail to apply.
+
+Upstream-Status: Backport [https://github.com/home-assistant/core/pull/164295]
+
+Signed-off-by: Thomas Roos <thomas@exein.io>
+---
+--- a/homeassistant/components/tibber/coordinator.py
++++ b/homeassistant/components/tibber/coordinator.py
+@@ -62,11 +62,20 @@
+     async def _async_update_data(self) -> None:
+         """Update data via API."""
+         try:
++            # The OAuth access token is only valid for an hour, but the tibber
++            # client is built once during setup and then reused. Re-resolve it
++            # through the runtime data so the session refreshes the token when
++            # needed and pushes the current one into the shared client.
++            # Without this the first poll after expiry fails as a fatal auth
++            # error and reloads the whole config entry once an hour.
++            await self.config_entry.runtime_data.async_get_client(self.hass)
+             await self._tibber_connection.fetch_consumption_data_active_homes()
+             await self._tibber_connection.fetch_production_data_active_homes()
+             await self._insert_statistics()
+         except tibber.RetryableHttpExceptionError as err:
+             raise UpdateFailed(f"Error communicating with API ({err.status})") from err
++        except ClientError as err:
++            raise UpdateFailed(f"Error refreshing the OAuth token ({err})") from err
+         except tibber.FatalHttpExceptionError:
+             # Fatal error. Reload config entry to show correct error.
+             self.hass.async_create_task(
+--- a/homeassistant/components/tibber/sensor.py
++++ b/homeassistant/components/tibber/sensor.py
+@@ -626,7 +626,7 @@
+             raise PlatformNotReady from err
+ 
+         if home.has_active_subscription:
+-            entities.append(TibberSensorElPrice(home))
++            entities.append(TibberSensorElPrice(home, entry))
+             if coordinator is None:
+                 coordinator = TibberDataCoordinator(hass, entry, tibber_connection)
+             entities.extend(
+@@ -743,9 +743,10 @@
+     _attr_state_class = SensorStateClass.MEASUREMENT
+     _attr_translation_key = "electricity_price"
+ 
+-    def __init__(self, tibber_home: TibberHome) -> None:
++    def __init__(self, tibber_home: TibberHome, entry: TibberConfigEntry) -> None:
+         """Initialize the sensor."""
+         super().__init__(tibber_home=tibber_home)
++        self._entry = entry
+         self._last_updated: datetime.datetime | None = None
+         self._spread_load_constant = randrange(TWENTY_MINUTES)
+ 
+@@ -802,6 +803,10 @@
+     async def _fetch_data(self) -> None:
+         _LOGGER.debug("Fetching data")
+         try:
++            # Same one-hour OAuth token problem as in the data coordinator -
++            # make sure the shared client carries a valid token before asking
++            # the API for anything.
++            await self._entry.runtime_data.async_get_client(self.hass)
+             await self._tibber_home.update_info_and_price_info()
+         except TimeoutError, aiohttp.ClientError:
+             return
+-- 
+2.51.0

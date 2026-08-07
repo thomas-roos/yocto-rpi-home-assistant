@@ -94,11 +94,101 @@ it - unit 64 keeps working normally, unit 40's sensors just read
 `unavailable`. If SAX's smartmeter accessory is ever installed on this
 system, this patch should be revisited/dropped.
 
-### Backlog (not started)
+### Patching Home Assistant core (Tibber OAuth token)
 
-Tibber integration, Miele (Waschmaschine/Trockner/Spülmaschine), Zigbee,
-and a native `apexcharts-card`-based dashboard are planned but not yet
-implemented.
+`meta-homeassistant`'s `python3-homeassistant` recipe builds Home Assistant
+from a git checkout and already applies `0001`-`0004`, so core integrations can
+be patched from this layer by dropping a numbered patch in
+`meta-application/recipes-homeassistant/homeassistant/files/` and adding it to
+`SRC_URI` in `python3-homeassistant_%.bbappend`. Unlike a `custom_components`
+integration there is no fork-and-`SRCREV` path here - the patch is the
+mechanism.
+
+`0005-tibber-refresh-oauth-token-before-api-calls.patch` is a **backport with a
+known expiry date**: upstream fixed this in
+[#164295](https://github.com/home-assistant/core/pull/164295) ("Fix Tibber
+update token", merged 2026-03-17), first released in **2026.4.0**, and never
+backported it to a 2026.3.x point release (2026.3.1-2026.3.4 all still carry
+the bug). Since `meta-homeassistant` pins 2026.3.0, we hit it. **Drop this
+patch the moment that recipe moves to 2026.4.0 or newer** - it will fail to
+apply, which is the intended signal.
+
+It fixes the Tibber integration reloading its config entry once an hour. Since Tibber moved to
+OAuth2 (the `cloud` auth implementation), the access token is valid for 3600 s.
+`TibberRuntimeData.async_get_client()` refreshes the session and pushes the
+current token into the shared `tibber.Tibber` client - but nothing called it
+after setup: `async_setup_entry()` resolved the client once, and both
+`TibberDataCoordinator` and `TibberSensorElPrice` then kept using that captured
+object with its setup-time token. An hour later the API answered
+
+```
+UNAUTHENTICATED / "exp" claim timestamp check failed
+```
+
+which pyTibber raises as `FatalHttpExceptionError`; the coordinator's handler
+for that reloads the whole config entry, and *that* is what refreshed the
+token - so the integration limped along reloading itself hourly. Symptoms were
+`sensor.schuhkarton_monthly_*` sitting at `unknown` for the ~20 min between the
+reload and the next 20-minute coordinator run, and the price sensor blipping
+`unavailable` every hour. The patch re-resolves the client through
+`runtime_data` before touching the API in both places, which is what
+`TibberDataAPICoordinator` in the same file already did.
+
+Note the price sensor itself was never really broken - it kept serving values -
+so the visible damage was limited to the monthly sensors and log noise.
+
+Because `/usr/lib/python3.14/site-packages` lives on the RAUC rootfs slot and
+not on `/data`, a core patch like this is *not* subject to the `/data` caveat
+above: it arrives with the next rootfs update and needs no manual seeding. It
+does mean the reverse, though - hand-copying the patched `.py` files onto a
+running device (useful to test a fix without a full image cycle) is undone by
+the next `rauc install`.
+
+### Lovelace dashboards and custom cards
+
+Dashboards are storage-mode (edited in the UI, stored as
+`/var/lib/homeassistant/.storage/lovelace.*`), so like `automations.yaml` they
+are live device state on `/data` rather than something a recipe produces. The
+`overview` dashboard (`http://ha:8123/dashboard-overview/0`) is a single
+`sections` view: the Reolink camera and the two KNX Haustür openers are its
+only interactive controls, everything else is graphs and read-only status.
+
+Custom Lovelace cards, on the other hand, *are* packaged - `apexcharts-card`
+(`meta-application/recipes-homeassistant/apexcharts-card/`) fetches the
+upstream release bundle pinned by sha256 and installs it into
+`${localstatedir}/lib/homeassistant/www/`, which Home Assistant serves as
+`/local/`. Upstream ships only a prebuilt minified bundle, so there is nothing
+to compile; the recipe just pins and installs it.
+
+A card file on its own does nothing: Home Assistant only loads it if a matching
+entry exists in `.storage/lovelace_resources` (Settings > Dashboards >
+Resources, requires advanced mode):
+
+```json
+{"id": "<hex>", "type": "module", "url": "/local/apexcharts-card.js?v=2.2.3"}
+```
+
+That file is runtime state on `/data`, so it is not packaged - and per the
+`/data` caveat above, on an already-provisioned device both the `www/` file and
+the resource entry have to be created over SSH once. Bump the `?v=` query
+string whenever the recipe's `PV` changes, otherwise browsers keep serving the
+stale cached bundle.
+
+### Backlog
+
+- **Miele** (Waschmaschine/Trockner/Spülmaschine) - not started. The pip
+  requirement (`python3-pymiele`) is already packaged and in the image, but no
+  config entry exists yet.
+- **Zigbee** - partially done. ZHA is configured against an SLZB-06 (CC2652)
+  coordinator and the `python3-zigpy*` stack is in the image, but no devices
+  are paired yet, so it currently contributes zero entities.
+- **PV production sensor** - the 15 kWp array sits on its own production meter
+  that the SAX/ADW200 cannot see (`sensor.sax_pv_leistung` is `unavailable`,
+  SunSpec PV power reads a constant 0), so the Energy dashboard has no solar
+  source and dashboards have no real PV graph.
+
+Tibber (dynamic import pricing, `sensor.schuhkarton_electricity_price`) and the
+`apexcharts-card` packaging are done.
 
 ## Building with bitbake-setup
 
@@ -140,12 +230,12 @@ cd bitbake/bin/ && \
 
 For Raspberry Pi:
 ```bash
-. ./bitbake-builds/setupqemux86-64/build/init-build-env
+. ./bitbake-builds/setupraspberrypi-armv8/build/init-build-env
 ```
 
 For QEMU x86-64 (debugging):
 ```bash
-. ./bitbake-builds/setupraspberrypi-armv8/build/init-build-env
+. ./bitbake-builds/setupqemux86-64/build/init-build-env
 ```
 
 4. Build the image:
@@ -159,16 +249,17 @@ Or rauch bundle:
 bitbake ha-bundle
 ```
 
-5. Resulting image:
+5. Resulting image (`IMAGE_FSTYPES` is `wic wic.bmap ext4`, so there is no
+   compressed `.wic.bz2` - flash the `.wic` with its `.bmap`):
 
 ```bash
-./bitbake-builds/setup/build/tmp/deploy/images/raspberrypi-armv8/ha-image-raspberrypi-armv8.rootfs.wic.bz2
+./bitbake-builds/setupraspberrypi-armv8/build/tmp/deploy/images/raspberrypi-armv8/ha-image-raspberrypi-armv8.rootfs.wic
 ```
 
 Or rauc bundle:
 
 ```bash
-./bitbake-builds/setup/build/tmp/deploy/images/raspberrypi-armv8/ha-bundle-raspberrypi-armv8.raucb
+./bitbake-builds/setupraspberrypi-armv8/build/tmp/deploy/images/raspberrypi-armv8/ha-bundle-raspberrypi-armv8.raucb
 ```
 
 ### Tips and Tricks
@@ -196,9 +287,5 @@ Watch logs
 journalctl -xfeu homeassistant
 ```
 
-Todo:
-- Tibber integration
-- Miele appliances (Waschmaschine, Trockner, Spülmaschine)
-- Zigbee
-- Native dashboard (apexcharts-card + long-term statistics)
+Todo: see [Backlog](#backlog) above.
 
