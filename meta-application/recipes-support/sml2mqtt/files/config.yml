@@ -1,0 +1,35 @@
+logging:
+  level: INFO
+  file: stdout
+
+mqtt:
+  connection:
+    identifier: sml2mqtt-ha
+    host: localhost
+    port: 1883
+  topic prefix: smartmeter
+  last will:
+    topic: status
+
+general:
+  Wh in kWh: false
+  republish after: 60
+
+inputs:
+  - type: serial
+    url: /dev/ttyUSB0
+    timeout: 5
+
+devices:
+  # This house's Iskra/LGZ meter (D0 optical interface) only reports
+  # cumulative energy totals, not instantaneous power or power factor -
+  # power is derived from the energy counters on the Home Assistant side
+  # (see smartmeter.yaml, derivative sensor).
+  '0a014c475a00046eca01':
+    values:
+      - obis: '0100010800ff'
+        mqtt:
+          topic: energy_import
+      - obis: '0100020800ff'
+        mqtt:
+          topic: energy_export

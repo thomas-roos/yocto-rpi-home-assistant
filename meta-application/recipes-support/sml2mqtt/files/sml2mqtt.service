@@ -1,0 +1,13 @@
+[Unit]
+Description=SML smart meter to MQTT bridge
+After=network.target mosquitto.service
+
+[Service]
+User=sml2mqtt
+Group=sml2mqtt
+ExecStart=/usr/bin/sml2mqtt -c /etc/sml2mqtt/config.yml
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
