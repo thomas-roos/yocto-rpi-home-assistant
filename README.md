@@ -144,6 +144,97 @@ does mean the reverse, though - hand-copying the patched `.py` files onto a
 running device (useful to test a fix without a full image cycle) is undone by
 the next `rauc install`.
 
+### SIP: doorphone, Asterisk and Home Assistant
+
+The house doorphone is its own Yocto build (`meta-doorphone`, a Pi with a button
+on GPIO22 running `linphonecsh`). Pressing the button dials extension **1234** on
+this device's Asterisk, which rings everything in the group.
+
+Extensions:
+
+| ext  | device                                                              |
+|------|---------------------------------------------------------------------|
+| 1101 | wall panel                                                          |
+| 1102 | Thomas mobile                                                       |
+| 1103 | Katja mobile                                                        |
+| 1104 | **the doorphone itself** - it registers with this id, do not reuse   |
+| 1105 | **Home Assistant** (`hass-sip`), added so HA can ring on a doorbell  |
+
+Until 2026-08-07 the production PBX was an Asterisk 18 on the dev PC
+(192.168.0.22); it has been migrated here and stopped there. When something
+SIP-shaped misbehaves, check which PBX a device is actually pointed at first.
+
+**Codec policy: G.722 everywhere.** Home Assistant's SIP client speaks only
+PCMU/PCMA/G.722, and Asterisk cannot bridge that to an opus-only leg - Asterisk
+22 ships no `codec_opus` at all (`--with-opus` only gates
+`res_format_attr_opus` for pass-through), so there is no transcoder. HA carries
+no audio (the Pi has no microphone or speaker) but it must still negotiate
+*something* to accept the INVITE, otherwise its leg goes straight to `Down` and
+no doorbell notification fires. `pjsip.conf` therefore lists
+`allow=vp8,g722,ulaw,alaw,opus` - g722 first, opus last only as a safety net.
+
+Two traps worth knowing:
+
+- **`linphonec`'s `codec enable` takes an INDEX, not a name.** `codec enable
+  g722` is silently ignored. `doorphone.py` resolves indices at runtime by
+  parsing `codec list`, and logs what it enabled. This had the doorphone running
+  on opus for a year while the script claimed otherwise.
+- **`pjsip reload` silently ignores new endpoints and template changes.** Adding
+  1105, and changing the codec order, both needed a full
+  `systemctl restart asterisk`.
+
+**Registration was broken for everything until 2026-08-07**:
+`/var/lib/asterisk/astdb.sqlite3` was owned by `mosquitto:i2c`, so Asterisk
+could not write its own database and every REGISTER failed with `Unable to bind
+contact ... to AOR`. Cause: the same dynamic system-UID collision already
+documented for the homeassistant user in `python3-homeassistant_%.bbappend` -
+asterisk is uid 995 now but the file was owned by 996:995, the ids it held
+before mosquitto was added. **The asterisk user is still unpinned, so this can
+recur on a future rebuild.** If endpoints show `Unavailable`, check that
+ownership first.
+
+Home Assistant is a SIP endpoint via `hass-sip` (see the recipe). It provides a
+`media_player`, `sip.dial`/`send_dtmf`/`answer` services and an
+`sip_incoming_call` event; `automations.yaml` turns that event into a push
+notification with a Reolink snapshot, on the companion app's `alarm_stream`
+channel so it is audible on vibrate.
+
+**Door-open on `#` is still not implemented.** `extensions.conf` sets
+`__DYNAMIC_FEATURES=hangup#opendoor_start#opendoor_end` but no `features.conf`
+defines them - and the old PBX had an empty one too, so there is nothing to
+port. Note `#` is also bound to the builtin Blind Transfer, which must be
+overridden in a `featuremap` first. The trigger path is proven though: Asterisk
+can publish to the local mosquitto broker from inside the live process, so
+Asterisk -> MQTT -> HA automation -> `switch.eg_haustur` (KNX 4/5/0, EG door)
+needs no sudo rule or HA token.
+
+### Remote access: Tailscale
+
+`tailscale`/`tailscaled` are in the image, with `/var/lib/tailscale`
+bind-mounted from `/data` so the node key survives RAUC updates. Home Assistant
+itself stays on **plain HTTP**; TLS is Tailscale's job:
+
+```
+tailscale serve --bg 8123      # https://ha.<tailnet>.ts.net -> 127.0.0.1:8123
+```
+
+That yields a real, auto-renewed Let's Encrypt certificate. Two things are
+required for it to work: HTTPS certificates must be enabled in the tailnet admin
+console, and Home Assistant needs `use_x_forwarded_for` + `trusted_proxies` in
+`configuration.yaml` or it rejects every proxied request by design.
+
+**Do not enable `ssl_certificate` in Home Assistant with a self-signed cert.**
+It was tried: the Android companion app's WebView fails with
+`ERROR_FAILED_SSL_HANDSHAKE` (-11) and, unlike a browser, offers no way to
+accept the exception. `ha-selfsigned-cert` still generates one on first boot
+(useful for anything less fussy, e.g. a browser needing a secure context for
+microphone access), but nothing uses it by default.
+
+SIP over Tailscale works: Asterisk binds `0.0.0.0:5060` so it answers on the
+tailnet address too, and a phone can register from anywhere. Watch the
+`tailscale0` MTU of 1280 - large SIP packets fragment; the trimmed codec list
+keeps INVITEs well under it.
+
 ### Lovelace dashboards and custom cards
 
 Dashboards are storage-mode (edited in the UI, stored as
@@ -179,6 +270,17 @@ stale cached bundle.
 - **Miele** (Waschmaschine/Trockner/Spülmaschine) - not started. The pip
   requirement (`python3-pymiele`) is already packaged and in the image, but no
   config entry exists yet.
+- **Wall panel (1101) and Katja's mobile (1103)** still point at the retired PBX
+  on 192.168.0.22 and must be repointed at this device; until then only Home
+  Assistant receives doorbell calls and nobody can talk to a visitor. Neither
+  device has ssh or a web UI, so this is hands-on work.
+- **Pin the asterisk UID/GID** in a bbappend, the way homeassistant is pinned to
+  65:65, so the astdb ownership bug above cannot silently return.
+- **`asterisk-sounds-de`** is wired into the image but does not build: upstream
+  asterisksounds.org now serves a different file than the recipe's checksums
+  pin. Without any sounds package Asterisk cannot `Playback()` at all (every
+  failed call logs `pbx-invalid does not exist in any format`). Home Assistant
+  TTS is unaffected.
 - **Zigbee** - partially done. ZHA is configured against an SLZB-06 (CC2652)
   coordinator and the `python3-zigpy*` stack is in the image, but no devices
   are paired yet, so it currently contributes zero entities.

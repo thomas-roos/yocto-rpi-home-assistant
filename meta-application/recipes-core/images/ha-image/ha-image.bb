@@ -236,6 +236,13 @@ IMAGE_INSTALL:append = " asterisk"
 
 IMAGE_INSTALL:append = " knxd"
 
+# German prompt set. Without any sounds package asterisk cannot Playback()
+# anything at all - every failed call logs "pbx-invalid does not exist in any
+# format" and the caller just hears silence. Also needed for the IVR menus in
+# hass-sip's sip.dial. (Home Assistant TTS is unaffected either way - that
+# audio is synthesised by HA and streamed into the call.)
+IMAGE_INSTALL:append = " asterisk-sounds-de"
+
 # MQTT broker for sensors (e.g. water measurement) to publish to; also usable
 # by HA's own MQTT integration. Default mosquitto.conf (unmodified) already
 # listens on 0.0.0.0:1883 with anonymous access, matching this image's
