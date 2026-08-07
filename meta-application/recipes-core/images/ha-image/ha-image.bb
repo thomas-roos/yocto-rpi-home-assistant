@@ -210,6 +210,13 @@ IMAGE_INSTALL:append = " luxtronik-ha"
 # extension 1104 and part of the doorphone group call
 IMAGE_INSTALL:append = " hass-sip"
 
+# Generates a self-signed TLS cert on first boot (not at build time - that
+# would ship one shared private key in every image). Needed because browsers
+# only allow microphone access in a secure context, so a WebRTC/SIP card in
+# the dashboard requires https even on the LAN. Enabling it also needs an
+# http: block in configuration.yaml - see the recipe.
+IMAGE_INSTALL:append = " ha-selfsigned-cert"
+
 # Lovelace graph card - needs a resource entry in .storage/lovelace_resources
 # on the device before it is usable, see the recipe's trailing comment
 IMAGE_INSTALL:append = " apexcharts-card"

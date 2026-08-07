@@ -1,0 +1,17 @@
+[Unit]
+Description=Generate a self-signed TLS certificate for Home Assistant
+# The certificate lives under /var/lib/homeassistant, which is bind-mounted from
+# the /data partition - so this must not run before that mount exists, and must
+# finish before Home Assistant reads its ssl_certificate/ssl_key.
+After=local-fs.target var-lib-homeassistant.mount
+Requires=local-fs.target
+Before=homeassistant.service
+ConditionPathExists=/var/lib/homeassistant
+
+[Service]
+Type=oneshot
+ExecStart=@BINDIR@/ha-gen-selfsigned-cert.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
