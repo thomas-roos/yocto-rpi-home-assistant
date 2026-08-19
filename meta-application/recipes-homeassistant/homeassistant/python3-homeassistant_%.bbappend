@@ -8,6 +8,17 @@ SRC_URI += "file://homeassistant.service"
 # header and the "Tibber OAuth token" section of the top-level README.
 SRC_URI += "file://0005-tibber-refresh-oauth-token-before-api-calls.patch"
 
+# Make the ollama integration retry instead of failing permanently when the
+# Ollama server is unreachable at HA startup. The upstream handler converts
+# only (TimeoutError, httpx.ConnectError) into ConfigEntryNotReady, but the
+# ollama client re-raises connection failures as the *builtin* ConnectionError,
+# which is not an httpx.ConnectError - so the entry lands in "setup_error" and
+# is never retried. That also takes the whole Assist pipeline down with it,
+# because the pipeline names conversation.ollama_conversation as its engine and
+# has no fallback. See the patch header and the "Ollama" section of the README.
+# No known expiry: still unfixed on upstream dev as of 2026-05-12.
+SRC_URI += "file://0006-ollama-retry-setup-when-the-server-is-unreachable.patch"
+
 # Pin a static UID/GID for the homeassistant user instead of relying on
 # dynamic system-user allocation order. Without this, a rebuild can hand
 # its UID to a different user (it happened: systemd-network took UID 990

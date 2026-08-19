@@ -29,9 +29,11 @@ FILES:${PN} += "${localstatedir}/lib/homeassistant/custom_components/sip"
 # arriving transitively via some other recipe.
 RDEPENDS:${PN} += "ffmpeg"
 
-# Configured against the local Asterisk as endpoint 1104 (see
-# meta-application/recipes-asterisk/asterisk/files/pjsip.conf and the [Features]
-# context in extensions.conf, where 1104 was added to the doorphone group call).
+# Configured against the local Asterisk as endpoint 1105 (see
+# meta-application/recipes-asterisk/asterisk/files/pjsip.conf and the
+# Internal-Main context in extensions.conf, where 1105 was added to the doorphone
+# group call on extension 1234). NOTE 1104 is the doorphone itself - it registers
+# with username 1104 from doorphone.py - so Home Assistant must not use it.
 # The config entry itself is runtime state in .storage/core.config_entries and is
 # therefore not packaged - see the /data caveat in the top-level README.
 #

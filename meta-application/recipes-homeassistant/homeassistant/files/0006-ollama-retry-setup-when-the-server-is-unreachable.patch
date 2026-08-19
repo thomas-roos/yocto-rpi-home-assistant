@@ -1,0 +1,77 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Thomas Roos <thomas@exein.io>
+Date: Wed, 19 Aug 2026 15:10:00 +0000
+Subject: [PATCH] ollama: retry setup when the server is unreachable
+
+If the Ollama server is not reachable at the moment Home Assistant starts,
+the config entry fails permanently instead of being retried, and the
+integration stays dead until someone reloads it by hand.
+
+async_setup_entry() probes the server with client.list() and converts the
+expected failures into ConfigEntryNotReady, which is what puts the entry
+into the "setup_retry" state and gets it retried with backoff:
+
+    except (TimeoutError, httpx.ConnectError) as err:
+        raise ConfigEntryNotReady(err) from err
+
+The httpx.ConnectError arm never fires. The ollama client does not let
+httpx exceptions out - _client.py's _request_raw() catches them first and
+re-raises the *builtin* ConnectionError:
+
+    except httpx.ConnectError:
+        raise ConnectionError(CONNECTION_ERROR_MESSAGE) from None
+
+and httpx.ConnectError is not a subclass of the builtin ConnectionError
+(it derives from httpx.TransportError -> httpx.HTTPError -> Exception).
+So a connection refusal escapes async_setup_entry() as an unexpected
+exception, the entry lands in "setup_error" rather than "setup_retry",
+and Home Assistant never tries again.
+
+Observed on this system: Home Assistant started while the machine running
+Ollama was down. The log showed exactly one
+
+    ERROR ... Error setting up entry http://<host>:11434 for ollama
+    ConnectionError: Failed to connect to Ollama. Please check that
+    Ollama is downloaded, running and accessible.
+
+and no retry for the next 25 hours, long after Ollama was healthy again.
+The damage is not limited to Ollama: because the entry never set up, the
+conversation.ollama_conversation entity was never created, and the Assist
+pipeline that names it as its conversation_engine then raised
+
+    ValueError: Agent conversation.ollama_conversation not found
+
+on every single request - there is no fallback to the built-in agent, so
+the entire voice/text assistant was down, not just the LLM.
+
+Catch the builtin ConnectionError, which is what the client actually
+raises. Also widen httpx.ConnectError to its base httpx.HTTPError so
+transport failures on any code path that does not go through
+_request_raw() (httpx.ConnectTimeout is likewise not a TimeoutError
+subclass) are covered too. Both are strict supersets of what was caught
+before, so no previously-retried failure stops being retried.
+
+ollama.ResponseError is deliberately *not* included: it is the conversion
+of httpx.HTTPStatusError, so it means we did reach an HTTP server that
+answered with an error, and a permanent API-level error should surface as
+a failure rather than retry forever.
+
+Still present upstream as of the 2026-05-12 dev branch; the tuple has not
+been touched since the integration was added in #113962. Unlike the tibber
+patch this one has no known expiry - drop it once upstream fixes it.
+---
+ homeassistant/components/ollama/__init__.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/homeassistant/components/ollama/__init__.py b/homeassistant/components/ollama/__init__.py
+--- a/homeassistant/components/ollama/__init__.py
++++ b/homeassistant/components/ollama/__init__.py
+@@ -66,7 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: OllamaConfigEntry) -> bo
+     try:
+         async with asyncio.timeout(DEFAULT_TIMEOUT):
+             await client.list()
+-    except (TimeoutError, httpx.ConnectError) as err:
++    except (TimeoutError, ConnectionError, httpx.HTTPError) as err:
+         raise ConfigEntryNotReady(err) from err
+ 
+     entry.runtime_data = client
