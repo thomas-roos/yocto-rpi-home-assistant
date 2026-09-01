@@ -291,6 +291,42 @@ tailnet address too, and a phone can register from anywhere. Watch the
 `tailscale0` MTU of 1280 - large SIP packets fragment; the trimmed codec list
 keeps INVITEs well under it.
 
+**MagicDNS is disabled on purpose** (`tailscale set --accept-dns=false`, shipped as
+a `tailscaled.service` drop-in by
+`meta-application/recipes-connectivity/tailscale/tailscale_%.bbappend`). Left on,
+tailscaled rewrites `/etc/resolv.conf` to list `100.100.100.100` as the *only*
+nameserver; that resolver then answers SERVFAIL for every public name, because this
+tailnet has no global nameservers configured and tailscaled could not read the system
+defaults either (`dns: resolver: forward: no upstream resolvers set`).
+
+The failure mode is nasty because it is silent and partial: local integrations (KNX,
+ZHA, the SML meter, the SAX battery) keep working, so the system looks healthy, while
+everything that needs a hostname dies. It went unnoticed for 11 days, from the
+2026-08-18 restart until 2026-08-29 - Tibber stopped entirely (its statistics simply
+end at `2026-08-18T13:00`, and the Lovelace `tibber` view shows nothing but the local
+SML sensors), met.no weather logged a `ClientConnectorDNSError` every 80 s, and every
+mobile_app push notification was dropped.
+
+Symptoms and repair on a live device:
+
+```
+tailscale dns status               # "Resolvers: (no resolvers configured...)"
+nslookup api.tibber.com            # fails
+nslookup api.tibber.com 192.168.0.1  # works -> routing fine, resolution broken
+tailscale set --accept-dns=false
+ln -sf /etc/resolv-conf.systemd /etc/resolv.conf   # tailscaled replaced the symlink
+                                                   # with a static file and does not
+                                                   # put it back
+systemctl restart systemd-resolved   # drops the stale global 100.100.100.100
+systemctl restart homeassistant      # Tibber does not retry on its own
+```
+
+The cost of `--accept-dns=false` is that tailnet peers are reachable *from* this
+device by IP only, not by `*.ts.net` name. Inbound `tailscale serve` does not use
+MagicDNS and is unaffected. The alternative fix - configuring global nameservers in
+the tailnet admin console - lives outside this repo, which is why the image takes the
+local route.
+
 ### Lovelace dashboards and custom cards
 
 Dashboards are storage-mode (edited in the UI, stored as
