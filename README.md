@@ -76,29 +76,45 @@ device as a USB-serial adapter (`/dev/ttyUSB0`). `sml2mqtt`
 frames and publishes to the local mosquitto broker:
 
 - Meter: Iskra/LGZ, device id `0a014c475a00046eca01` (only reports
-  cumulative energy counters, no instantaneous power/PF register)
+  cumulative energy counters, no instantaneous power/PF register - and those
+  counters advance in whole **1000 Wh steps**, roughly 3 import and 24 export
+  ticks a day)
 - Topics: `smartmeter/0a014c475a00046eca01/energy_import` and
   `.../energy_export` (Wh, republished at least every 60s)
 - CRC: `x25`, framing `8N1` - if you ever see 100% CRC failures on a
   freshly-wired reader, try re-seating/re-angling the IR sensor before
   suspecting the software; that fixed it here.
 
-Home Assistant reads those MQTT topics and derives power from them
-(`smartmeter_mqtt.yaml`, `smartmeter_sensor.yaml`, `smartmeter_template.yaml`
-under `/var/lib/homeassistant/`, included from `configuration.yaml`):
-`sensor.grid_energy_import` / `_export` (MQTT) -> `sensor.grid_power_import_raw`
-/ `_export_raw` (derivative) -> `sensor.grid_power` (import minus export,
-positive = drawing from the grid) and a fixed `sensor.grid_power_factor`
-(1.0 - this meter has no real PF register). These plain YAML files are
-live device config (like `automations.yaml`), not custom_components, so
-they are not packaged as a recipe - just backed up along with the rest of
-`/data`.
+Home Assistant reads those MQTT topics as `sensor.grid_energy_import` /
+`_export` (`smartmeter_mqtt.yaml`, `smartmeter_sensor.yaml`,
+`templates/smartmeter.yaml` under `/var/lib/homeassistant/`, included from
+`configuration.yaml`). These plain YAML files are live device config (like
+`automations.yaml`), not custom_components, so they are not packaged as a
+recipe - just backed up along with the rest of `/data`.
+
+Those counters are **authoritative for energy volumes** (Energy dashboard,
+utility meters) but useless for live power. Because they only tick per whole
+kWh, the `sensor.grid_power_import_raw` / `_export_raw` derivative sensors emit
+a single spike per tick and then hold that stale value for hours - so the
+`sensor.grid_power` built from them updated about 26 times a day, and its hourly
+long-term statistic could repeat one value for an entire day. It read negative
+(i.e. exporting) all night. Since 2026-09-19 `sensor.grid_power` instead mirrors
+**`sensor.sax_battery_a_smart_meter`**, the SAX's own grid-side ADW200 meter on
+the working Modbus unit 64, which measures the same connection point every
+10-20 s with the same sign convention (positive = drawing from the grid). Note
+that sensor has no `state_class`, so it has no long-term statistics of its own -
+any historical analysis has to time-weight raw `states` rows. The `_raw`
+derivative sensors are kept only because a Lovelace card still references them.
+`sensor.grid_power_factor` remains a fixed 1.0 - this meter has no real PF
+register.
 
 ### SAX battery integration (Modbus TCP)
 
 `sax-battery-ha` (`meta-application/recipes-homeassistant/sax-battery-ha/`)
-packages `matfroh/sax_battery_ha` for `pilot_from_ha` battery steering
-against `sensor.grid_power` / `sensor.grid_power_factor` above.
+packages `matfroh/sax_battery_ha` for `pilot_from_ha` battery steering.
+Its `power_sensor_entity_id` is `sensor.sax_battery_a_smart_meter` (the battery's
+own grid meter, *not* `sensor.grid_power`); `pf_sensor_entity_id` is
+`sensor.grid_power_factor` above.
 
 **Known hardware caveat + local fix:** this SAX Power Neo unit only
 responds on Modbus unit id 64 (status/SOC/power - all steering actually
