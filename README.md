@@ -377,17 +377,13 @@ stale cached bundle.
 
 Status verified against the live device (`ha`, 192.168.0.192) on 2026-08-19.
 
-- **`asterisk-sounds-de` does not build - and it is now in `IMAGE_INSTALL`, so
-  the image build is broken.** `do_fetch` fails because
-  asterisksounds.org no longer serves the file at all: the download lands as a
-  195-byte HTML *"Error. Page cannot be displayed"* page
-  (`.bitbake-setup-downloads/asterisk-sounds-core-de-2.11.19.zip.tmp`). The
-  recipe's checksums are not the problem - there is nothing to checksum. Needs
-  either a new upstream URL/mirror or a `PREMIRRORS` entry. The `sox-native`
-  bbappends added for it are fine and unrelated. On the device
-  `/usr/share/asterisk` does not exist, so Asterisk currently cannot
-  `Playback()` anything (every failed call logs `pbx-invalid does not exist in
-  any format`); Home Assistant TTS is unaffected.
+- **`asterisk-sounds-de` is fixed in the recipe but not on the device yet.**
+  asterisksounds.org no longer serves the zips, so the recipe now fetches them
+  from the Wayback Machine; the original checksums still match. If a fetch ever
+  fails with a checksum mismatch, delete the stale
+  `.bitbake-setup-downloads/asterisk-sounds-*-de-2.11.19.zip.tmp` first - wget
+  `--continue` appends to an old HTML error page. The device gets
+  `/usr/share/asterisk` with the next RAUC bundle.
 - **Only extension 1105 (Home Assistant) is registered.** `pjsip show contacts`
   on the device lists exactly one contact, `1105@127.0.0.1`. The wall panel
   (1101), Thomas' mobile (1102), Katja's mobile (1103) and the doorphone itself

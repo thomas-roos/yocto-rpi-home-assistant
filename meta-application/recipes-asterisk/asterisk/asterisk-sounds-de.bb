@@ -3,9 +3,13 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=5ca06639fdbd49cd1ff643b084e65f60"
 
 PV = "2.11.19"
 
+# asterisksounds.org no longer serves the files (401 / HTML error page), so fetch
+# the identical zips from the Wayback Machine. The checksums below are the
+# original upstream ones and still match.
+ARCHIVE = "https://web.archive.org/web/2023id_/http://www.asterisksounds.org/sites/asterisksounds.org/files/sounds/de/download"
 SRC_URI = "\
-  http://www.asterisksounds.org/sites/asterisksounds.org/files/sounds/de/download/asterisk-sounds-core-de-${PV}.zip;name=core;subdir=${S} \
-  http://www.asterisksounds.org/sites/asterisksounds.org/files/sounds/de/download/asterisk-sounds-extra-de-${PV}.zip;name=extra;subdir=${S} \
+  ${ARCHIVE}/asterisk-sounds-core-de-${PV}.zip;name=core;subdir=${S};downloadfilename=asterisk-sounds-core-de-${PV}.zip \
+  ${ARCHIVE}/asterisk-sounds-extra-de-${PV}.zip;name=extra;subdir=${S};downloadfilename=asterisk-sounds-extra-de-${PV}.zip \
 "
 SRC_URI[core.md5sum] = "b775f7ed578662d92fb444c2f76a6088"
 SRC_URI[core.sha256sum] = "cbdef15430478270ff67f0f18ca7123630975df8953be3d650531bc90a5a14b6"
