@@ -226,9 +226,10 @@ could not write its own database and every REGISTER failed with `Unable to bind
 contact ... to AOR`. Cause: the same dynamic system-UID collision already
 documented for the homeassistant user in `python3-homeassistant_%.bbappend` -
 asterisk is uid 995 now but the file was owned by 996:995, the ids it held
-before mosquitto was added. **The asterisk user is still unpinned, so this can
-recur on a future rebuild.** If endpoints show `Unavailable`, check that
-ownership first.
+before mosquitto was added. The asterisk UID is still allocated dynamically,
+but `asterisk.tmpfiles` now re-owns `/var/lib/asterisk` by name at every boot
+(`Z` line), so a changed UID no longer leaves the database unwritable. If
+endpoints show `Unavailable`, still check that ownership first.
 
 Home Assistant is a SIP endpoint via `hass-sip` (see the recipe). It provides a
 `media_player`, `sip.dial`/`send_dtmf`/`answer` services and an
@@ -390,9 +391,6 @@ Status verified against the live device (`ha`, 192.168.0.192) on 2026-08-19.
   repointed at this device. Until then a doorbell press reaches Home Assistant
   only and nobody can talk to a visitor. Neither the panel nor the doorphone has
   ssh or a web UI, so this is hands-on work.
-- **Pin the asterisk UID/GID** in a bbappend, the way `python3-homeassistant` is
-  pinned to 65:65, so the astdb ownership bug above cannot silently return. Not
-  started - no `USERADD_PARAM` for asterisk exists in this layer.
 - **PV production sensor** - the 15 kWp array sits on its own production meter
   that the SAX/ADW200 cannot see (SunSpec PV power via
   `sensor.sax_battery_a_sunspec_pv_power` reads a constant 0). `.storage/energy`

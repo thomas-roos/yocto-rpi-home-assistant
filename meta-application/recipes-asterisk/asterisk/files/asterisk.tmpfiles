@@ -1,4 +1,10 @@
 d /var/lib/asterisk 0700 asterisk asterisk
+# The asterisk UID/GID are allocated dynamically at build time and change
+# when another system user is added to the image (mosquitto did that once).
+# /var/lib/asterisk lives on /data and keeps the old numeric owner, so
+# Asterisk could no longer write astdb and no endpoint could register.
+# Re-own the contents by name at every boot.
+Z /var/lib/asterisk - asterisk asterisk -
 d /run/asterisk	    0770 root	  asterisk
 d /var/log/asterisk 0770 root	  asterisk
 
