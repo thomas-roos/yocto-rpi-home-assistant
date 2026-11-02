@@ -377,13 +377,12 @@ stale cached bundle.
 
 Status verified against the live device (`ha`, 192.168.0.192) on 2026-08-19.
 
-- **`asterisk-sounds-de` is fixed in the recipe but not on the device yet.**
+- **`asterisk-sounds-de` fetches from the Wayback Machine** (on the device since 2026-11-02).
   asterisksounds.org no longer serves the zips, so the recipe now fetches them
   from the Wayback Machine; the original checksums still match. If a fetch ever
   fails with a checksum mismatch, delete the stale
   `.bitbake-setup-downloads/asterisk-sounds-*-de-2.11.19.zip.tmp` first - wget
-  `--continue` appends to an old HTML error page. The device gets
-  `/usr/share/asterisk` with the next RAUC bundle.
+  `--continue` appends to an old HTML error page.
 - **Only extension 1105 (Home Assistant) is registered.** `pjsip show contacts`
   on the device lists exactly one contact, `1105@127.0.0.1`. The wall panel
   (1101), Thomas' mobile (1102), Katja's mobile (1103) and the doorphone itself
