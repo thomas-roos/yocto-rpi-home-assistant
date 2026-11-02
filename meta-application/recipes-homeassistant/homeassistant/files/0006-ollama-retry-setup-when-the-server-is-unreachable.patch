@@ -59,6 +59,7 @@ a failure rather than retry forever.
 Still present upstream as of the 2026-05-12 dev branch; the tuple has not
 been touched since the integration was added in #113962. Unlike the tibber
 patch this one has no known expiry - drop it once upstream fixes it.
+Upstream-Status: Pending
 ---
  homeassistant/components/ollama/__init__.py | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
