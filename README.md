@@ -237,14 +237,19 @@ Home Assistant is a SIP endpoint via `hass-sip` (see the recipe). It provides a
 notification with a Reolink snapshot, on the companion app's `alarm_stream`
 channel so it is audible on vibrate.
 
-**Door-open on `#` is still not implemented.** `extensions.conf` sets
-`__DYNAMIC_FEATURES=hangup#opendoor_start#opendoor_end` but no `features.conf`
-defines them - and the old PBX had an empty one too, so there is nothing to
-port. Note `#` is also bound to the builtin Blind Transfer, which must be
-overridden in a `featuremap` first. The trigger path is proven though: Asterisk
-can publish to the local mosquitto broker from inside the live process, so
-Asterisk -> MQTT -> HA automation -> `switch.eg_haustur` (KNX 4/5/0, EG door)
-needs no sudo rule or HA token.
+**Door-open on `#`:** whoever answers the doorbell call presses `#`. The
+`opendoor` feature in `features.conf` publishes `asterisk/door/eg` to the local
+mosquitto broker (TCP works from inside asterisk.service's sandbox; the knxd unix
+socket in `/tmp` does not, because of `PrivateTmp`). The Home Assistant
+automation "Türklingel - Tür öffnen mit #" (in ha-config) then switches
+`switch.eg_haustur` (KNX 4/5/0); the KNX actuator times the pulse itself. MQTT
+is anonymous on the LAN, so that automation only opens the door within 2 minutes
+of a bell press. The feature runs the `[opendoor]` dialplan routine, which
+publishes the command and then hangs up, ending the call on both sides. In
+`features.conf` the routine must be written `Gosub(opendoor,s,1)`: with plain
+commas Asterisk passes only `opendoor` and the routine never runs. The doorbell
+`Dial()` must not use the `t` option: it binds `#` to the builtin blind
+transfer, which shadows the feature.
 
 ### Ollama / Assist and the no-retry trap
 
