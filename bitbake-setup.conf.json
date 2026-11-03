@@ -10,7 +10,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "c870f5bd96ad02efc02c58133c27bdae3a300e3e"
+                "rev": "0f33b68cbabab26c9ed1585e3ee109689d206812"
             },
             "path": "bitbake"
         },
@@ -22,7 +22,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "90e0db919e93e691c725788be2842acb2ee0610b"
+                "rev": "5ffd9e055469165d486048cd1f505058dbc35b63"
             },
             "path": "openembedded-core"
         },
@@ -34,7 +34,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "9c6cf36c3511b94957aba04002d98bec665e9f1e"
+                "rev": "dd6c2950bb507f8c311bd82410a032ed6eb38063"
             },
             "path": "meta-yocto"
         },
@@ -46,7 +46,7 @@
                     }
                 },
                 "branch": "master-next",
-                "rev": "7d033cd179c72efac8c2a457104336e5a276d825"
+                "rev": "6211a7b01bc2f74fe47f245c66fcf0109204c8b8"
             },
             "path": "meta-openembedded"
         },
@@ -58,7 +58,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "352f4d3cf33c3f3540ab044955b88efec73dbc49"
+                "rev": "81a0380af9c3f5db2bab15e3e3b7068e9193d1ec"
             },
             "path": "meta-rauc"
         },
@@ -70,7 +70,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "00228100ab6dfb4ea53514c15cba02c0d2fa985e"
+                "rev": "4d666ae4956f1cfacbd1a844f2e1794cb7784e2a"
             },
             "path": "meta-rauc-community"
         },
@@ -82,7 +82,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "a0ebcf5639b391690b27381cc65c56c157a0981b"
+                "rev": "96d0b6dadfb8773d23356b1211936536a526dd07"
             },
             "path": "meta-raspberrypi"
         },
@@ -94,7 +94,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "2bf61d562a0223a6643a24c17589e7bdc69d0e70"
+                "rev": "d8c9b71c3ee113f70303ce6467f62779d16575f3"
             },
             "path": "meta-python-ai"
         },
@@ -106,7 +106,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "e4aed393ce551b3141d4594330fc654abaa2d4cf"
+                "rev": "b2a619d8170a50d12dee0c1f4e119b71be2f3cbc"
             },
             "path": "meta-virtualization"
         },
@@ -118,7 +118,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "cb76163e120e535b0ea491849588dbec5429d710"
+                "rev": "8a5361097fb775f4626a21138271e3564202c9d2"
             },
             "path": "meta-sca"
         },
@@ -130,7 +130,7 @@
                     }
                 },
                 "branch": "main",
-                "rev": "604934dd353b23ddef30269450765c048a5aee34"
+                "rev": "04e76d4be7e9e1cbf3958592d18b2cbf2e15d90e"
             },
             "path": "meta-clang-revival"
         },
@@ -141,8 +141,8 @@
                         "uri": "https://github.com/meta-homeassistant/meta-homeassistant.git"
                     }
                 },
-                "branch": "wrynose",
-                "rev": "ce6843f37aebd6a1ef2f0f6f25f3701fda8c5228"
+                "branch": "blacksail",
+                "rev": "006b741ec3535340b90f9f719f0c2fc75145b98a"
             },
             "path": "meta-homeassistant"
         }
