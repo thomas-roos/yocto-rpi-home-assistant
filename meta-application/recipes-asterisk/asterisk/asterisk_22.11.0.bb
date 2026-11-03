@@ -19,8 +19,10 @@ SRC_URI = "\
     file://extensions.conf \
     file://modules.conf \
     file://asterisk.conf \
+    file://features.conf \
 "
-SRCREV = "e470d8c69423357eb569343b6cd1eb09657cc4cc"
+# 22.11.0: includes "tcptls.c: fix build with OpenSSL 4" (oe-core master ships OpenSSL 4).
+SRCREV = "874768141f94bc03865cc746eee1c7669e3c46d5"
 
 ERROR_QA:remove = "unknown-configure-option configure-unsafe"
 
