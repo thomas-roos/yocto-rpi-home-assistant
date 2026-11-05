@@ -227,7 +227,14 @@ IMAGE_INSTALL:append = " \
     python3-zigpy-xbee \
     python3-zigpy-zigate \
     python3-zigpy-znp \
-"		
+"
+
+# ZHA imports homeassistant_hardware, which needs universal-silabs-flasher
+# and ha-silabs-firmware-client; python3-homeassistant-zha does not pull
+# them in (ZHA failed to load from the
+# 2026-11-03 layer update until this was added). wake_on_lan's requirement
+# is not declared by meta-homeassistant either.
+IMAGE_INSTALL:append = " python3-universal-silabs-flasher python3-ha-silabs-firmware-client python3-wakeonlan"
 
 IMAGE_INSTALL:append = " python3-roborock"
 

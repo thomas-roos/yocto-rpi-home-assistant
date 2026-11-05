@@ -1,0 +1,40 @@
+From b95385cb37338f72884f3741d2edddd40f2a857b Mon Sep 17 00:00:00 2001
+From: Brendan Miesch <bpmiesch@gmail.com>
+Date: Mon, 5 Oct 2026 13:03:04 -0700
+Subject: [PATCH] Fix tls_set() default when ssl.PROTOCOL_TLSv1_2 is missing
+
+When tls_version is None, tls_set() read ssl.PROTOCOL_TLSv1_2 before
+checking for PROTOCOL_TLS_CLIENT. CPython built against OpenSSL >= 4.0
+no longer defines the version-specific PROTOCOL_TLSv1* constants
+(python/cpython#146207), so tls_set() raised AttributeError even though
+the value was about to be replaced.
+
+Only read PROTOCOL_TLSv1_2 when it exists. The PROTOCOL_TLS_CLIENT and
+PROTOCOL_TLS fallbacks are kept, so behavior is unchanged on existing
+runtimes.
+
+Add tests that tls_set() defaults to PROTOCOL_TLS_CLIENT, including
+when ssl.PROTOCOL_TLSv1_2 is not defined.
+
+Assisted-by: Anthropic Claude Opus 5.5 (claude-opus-5-5)
+Signed-off-by: Brendan Miesch <bpmiesch@gmail.com>
+
+Upstream-Status: Backport [https://github.com/eclipse-paho/paho.mqtt.python/commit/b95385cb37338f72884f3741d2edddd40f2a857b]
+---
+ src/paho/mqtt/client.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/paho/mqtt/client.py b/src/paho/mqtt/client.py
+index 3f7c3d125..df36c9cf1 100644
+--- a/src/paho/mqtt/client.py
++++ b/src/paho/mqtt/client.py
+@@ -1283,7 +1283,8 @@ def tls_set(
+ 
+         # Create SSLContext object
+         if tls_version is None:
+-            tls_version = ssl.PROTOCOL_TLSv1_2
++            if hasattr(ssl, "PROTOCOL_TLSv1_2"):
++                tls_version = ssl.PROTOCOL_TLSv1_2
+             # If the python version supports it, use highest TLS version automatically
+             if hasattr(ssl, "PROTOCOL_TLS_CLIENT"):
+                 # This also enables CERT_REQUIRED and check_hostname by default.
