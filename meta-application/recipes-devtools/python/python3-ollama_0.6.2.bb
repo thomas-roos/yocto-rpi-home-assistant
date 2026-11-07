@@ -10,8 +10,8 @@ DEPENDS += "python3-hatch-vcs-native"
 
 PYPI_PACKAGE = "ollama"
 
-SRC_URI[sha256sum] = "5a799e4dc4e7af638b11e3ae588ab17623ee019e496caaf4323efbaa8feeff93"
+SRC_URI[sha256sum] = "936d55daa684f474364c098611c933626f8d6c7d67065c5b7ae0c477b508b07f"
 
-RDEPENDS:${PN} += "python3-httpx python3-pydantic"
+RDEPENDS:${PN} += "python3-httpx (>=0.27) python3-pydantic (>=2.9)"
 
 BBCLASSEXTEND = "native"

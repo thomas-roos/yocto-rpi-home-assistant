@@ -8,7 +8,7 @@ inherit python_setuptools_build_meta
 
 PYPI_PACKAGE = "pymiele"
 
-SRC_URI[sha256sum] = "22a28986e013f14612b6acbed8d43dbb87b31c13ee9babcd9cde36fa1abb9197"
+SRC_URI[sha256sum] = "dc63637d17a75f77cd1a4d4656ff7033366bef3f8e8441989af25e6d0d16b09e"
 
 RDEPENDS:${PN} += "python3-aiohttp"
 

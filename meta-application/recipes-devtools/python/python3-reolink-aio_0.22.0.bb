@@ -7,7 +7,7 @@ inherit pypi setuptools3
 
 PYPI_PACKAGE = "reolink_aio"
 
-SRC_URI[sha256sum] = "d7337dc9218efd0913321d8b621482e763e029e250c95db71252761f0a2dc363"
+SRC_URI[sha256sum] = "08850191e7de268692346d52d411dd17c1d69bd9a171410fbcef7e95acafbb89"
 
 RDEPENDS:${PN} += "\
     python3-aiohttp \
