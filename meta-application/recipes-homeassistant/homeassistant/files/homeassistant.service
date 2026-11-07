@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=@HOMEASSISTANT_USER@
-ExecStart=/usr/bin/hass --skip-pip -c "@HOMEASSISTANT_CONFIG_DIR@"
+ExecStart=@HOMEASSISTANT_VENV@/bin/python3 -m homeassistant --skip-pip -c "@HOMEASSISTANT_CONFIG_DIR@"
 Restart=on-failure
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW

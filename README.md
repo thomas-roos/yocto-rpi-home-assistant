@@ -141,14 +141,13 @@ be patched from this layer by dropping a numbered patch in
 integration there is no fork-and-`SRCREV` path here - the patch is the
 mechanism.
 
-`0005-tibber-refresh-oauth-token-before-api-calls.patch` is a **backport with a
-known expiry date**: upstream fixed this in
+`0005-tibber-refresh-oauth-token-before-api-calls.patch` was a **backport with a
+known expiry date** of upstream
 [#164295](https://github.com/home-assistant/core/pull/164295) ("Fix Tibber
-update token", merged 2026-03-17), first released in **2026.4.0**, and never
-backported it to a 2026.3.x point release (2026.3.1-2026.3.4 all still carry
-the bug). Since `meta-homeassistant` pins 2026.3.0, we hit it. **Drop this
-patch the moment that recipe moves to 2026.4.0 or newer** - it will fail to
-apply, which is the intended signal.
+update token", first released in 2026.4.0). It was dropped with the move to
+Home Assistant 2026.11, which refreshes the token itself
+(`refresh_access_token`). No core patches are applied from this layer at the
+moment. The background is kept below for reference.
 
 It fixes the Tibber integration reloading its config entry once an hour. Since Tibber moved to
 OAuth2 (the `cloud` auth implementation), the access token is valid for 3600 s.
@@ -275,10 +274,10 @@ ValueError: Agent conversation.ollama_conversation not found
 with **no fallback to the built-in agent**. Observed here: one failure at boot,
 then 25 hours of dead Assist while Ollama itself was perfectly healthy.
 
-`0006-ollama-retry-setup-when-the-server-is-unreachable.patch` widens that
-`except` to `(TimeoutError, ConnectionError, httpx.HTTPError)`. Still unfixed on
-upstream `dev` as of 2026-05-12, so unlike the tibber patch it has no known
-expiry date.
+`0006-ollama-retry-setup-when-the-server-is-unreachable.patch` widened that
+`except` to `(TimeoutError, ConnectionError, httpx.HTTPError)`. Home Assistant
+2026.11 catches `ConnectionError` itself (`TimeoutError, httpx2.ConnectError,
+ConnectionError`), so the patch was dropped with that upgrade.
 
 Diagnosing it: `journalctl -u homeassistant -b | grep -i ollama`. A *single*
 "Error setting up entry" line with nothing after it is this bug, not a network
