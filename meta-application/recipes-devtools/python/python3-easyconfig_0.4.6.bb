@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/spacemanspiff2007/EasyConfig"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 
-SRC_URI[sha256sum] = "0f1445ae86fde64a4775938ff620a0f05a9e3c3ecf090bbb1b7b33112067032e"
+SRC_URI[sha256sum] = "4a80e59199e5b3e3c7100911fdb639b219624524f387b84da8b43feb6bd65220"
 
 inherit pypi setuptools3
 
